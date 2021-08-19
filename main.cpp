@@ -14,7 +14,7 @@
 int main() 
 {
 	
-	stbi_set_flip_vertically_on_load(true);
+	stbi_set_flip_vertically_on_load(false);
 
 #pragma region Initialization
 	//initialize glfw
@@ -48,57 +48,36 @@ int main()
 
 #pragma region Mesh Loading
 
-	ObjData trees;
-	LoadObjFile(&trees, "trees/Tree/Tree.obj");
-	GLfloat treesOffsets[] = { 0.0f, 0.0f, 0.0f };
+	ObjData grassPatch;
+	LoadObjFile(&grassPatch, "grass/10450_Rectangular_Grass_Patch_v1_iterations-2.obj");
+	GLfloat grassPatchOffsets[] = { 0.0f, 0.0f, 0.0f };
 	LoadObjToMemory(
-		&trees,
+		&grassPatch,
 		1.0f,
-		treesOffsets,
-		"trees"
+		grassPatchOffsets,
+		"grassPatch"
 	);
 
-	/*
-	ObjData sun;
-	LoadObjFile(&sun, "earth/earth.obj");
-	GLfloat sunOffsets[] = { 0.0f, 0.0f, 0.0f };
+	ObjData dino1;
+	LoadObjFile(&dino1, "dino1/dilophosaurus.obj");
+	GLfloat dino1Offsets[] = { 0.0f, 0.0f, 0.0f };
 	LoadObjToMemory(
-		&sun,
+		&dino1,
 		1.0f,
-		sunOffsets,
-		"sun"
+		dino1Offsets,
+		"dino1"
 	);
 
-	ObjData moon;
-	LoadObjFile(&moon, "earth/earth.obj");
-	GLfloat moonOffsets[] = { 0.0f, 0.0f, 0.0f };
-	LoadObjToMemory(
-		&moon,
-		1.0f,
-		moonOffsets,
-		"moon"
-	);
-
-	ObjData earth;
-	LoadObjFile(&earth, "earth/earth.obj");
-	GLfloat earthOffsets[] = { 0.0f, 0.0f, 0.0f };
-	LoadObjToMemory(
-		&earth,
-		1.0f,
-		earthOffsets,
-		"earth"
-	);
-	*/
-
+	
 
 	std::vector<std::string> faces
 	{
-		"right.png",
-		"left.png",
-		"bottom.png",
-		"top.png",
-		"front.png",
-		"back.png"
+		"right_noon.png",
+		"left_noon.png",
+		"bottom_noon.png",
+		"top_noon.png",
+		"front_noon.png",
+		"back_noon.png"
 	};
 	SkyBoxData skybox = loadSkyBox("Assets/skybox", faces);
 #pragma endregion
@@ -147,7 +126,7 @@ int main()
 	//DIRECTIONAL LIGHT
 	GLuint lightDirLoc = glGetUniformLocation(shaderProgram, "u_light_dir");
 	//glUniform3f(lightPosLoc, 3.0f, 0.0f, 0.0f);
-	glUniform3f(lightDirLoc, -2.0f, 1.0f, 0.0f);
+	glUniform3f(lightDirLoc, 0.0f, 2.0f, 0.0f);
 
 	//flag for shading
 	GLuint modelIdLoc = glGetUniformLocation(shaderProgram, "u_model_id");
@@ -218,7 +197,7 @@ int main()
 
 #pragma region View
 
-		glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 1.0f);
+		glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 100.0f);
 		glm::mat4 view = glm::lookAt(
 			cameraPos,  //EYE
 			//glm::vec3(0.5f, 0.0f, -1.0f),
@@ -241,7 +220,7 @@ int main()
 
 		//--------------------------------------------
 		//DRAWING SKYBOX
-		//DrawSkybox(skybox, skyboxShaderProgram, view, projection);
+		DrawSkybox(skybox, skyboxShaderProgram, view, projection);
 		glUseProgram(shaderProgram);
 
 
@@ -253,30 +232,6 @@ int main()
 		deltaTime = currentTime - prevTime;
 		rotFactor += deltaTime * rotSpeed;
 
-
-		
-		xFactor += deltaTime * xSpeed;
-		//zFactor -= deltaTime * zSpeed;
-		if (xFactor > 90.0f)
-		{
-			xSpeed = -3.0f;
-		}
-		else if (xFactor < -90.0f)
-		{
-			xSpeed = 3.0f;
-		}
-		
-		/*
-		if (zFactor < -8.0f)
-		{
-			zSpeed = 4.0f;
-		}
-		else if (zFactor > 4.0f)
-		{
-			zSpeed = -4.0f;
-		}
-		*/
-
 		prevTime = currentTime;
 
 		
@@ -284,16 +239,16 @@ int main()
 
 
 		//----------------------------------------------------------
-		//draw TREE
-		glUniform1f(modelIdLoc, 1.0f);
-		glBindVertexArray(trees.vaoId);
+		//draw GRASS
+		glBindVertexArray(grassPatch.vaoId);
 
 		// transforms
 		trans = glm::mat4(1.0f); // identity
 		//trans = glm::rotate(trans, glm::radians(rotFactor), glm::vec3(0.0f, 1.0f, 0.0f)); // matrix * rotation_matrix
-		trans = glm::translate(trans, glm::vec3(3.0f, 0.0f, -7.0f)); // matrix * translate_matrix
-		trans = glm::rotate(trans, glm::radians(rotFactor), glm::vec3(0.0f, 1.0f, 0.0f));
-		trans = glm::scale(trans, glm::vec3(1.0f, 1.0f, 1.0f));
+		trans = glm::translate(trans, glm::vec3(0.0f, -10.0f, 25.0f)); // matrix * translate_matrix
+		trans = glm::rotate(trans, glm::radians(270.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+		trans = glm::rotate(trans, glm::radians(270.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+		trans = glm::scale(trans, glm::vec3(0.5f, 0.5f, 0.5f));
 		
 		//send to shader
 		glm::mat4 normalTrans = glm::transpose(glm::inverse(trans));
@@ -302,39 +257,39 @@ int main()
 		
 
 		glActiveTexture(GL_TEXTURE0);
-		GLuint treesTexture = trees.textures[trees.materials[0].diffuse_texname];
-		glBindTexture(GL_TEXTURE_2D, treesTexture);
+		GLuint grassPatchTexture = grassPatch.textures[grassPatch.materials[0].diffuse_texname];
+		glBindTexture(GL_TEXTURE_2D, grassPatchTexture);
 	
 
 		//drawbackpack
-		glDrawElements(GL_TRIANGLES, trees.numFaces, GL_UNSIGNED_INT, (void*)0);
+		glDrawElements(GL_TRIANGLES, grassPatch.numFaces, GL_UNSIGNED_INT, (void*)0);
 
 		//---------------------------------------------------------------------
 
-		/*
+		
 		//----------------------------------------------------------------
-		//draw MOON
-		glUniform1f(modelIdLoc, 1.1f);
-		glBindVertexArray(moon.vaoId);
+		//draw DINO1
+		
+		glBindVertexArray(dino1.vaoId);
 
 		// transforms
 		trans1 = glm::mat4(1.0f); // identity
 		//trans = glm::rotate(trans, glm::radians(rotFactor), glm::vec3(0.0f, 1.0f, 0.0f)); // matrix * rotation_matrix
 		trans1 = glm::rotate(trans, glm::radians(rotFactor), glm::vec3(0.0f, 1.0f, 0.0f));
-		trans1 = glm::translate(trans1, glm::vec3(-0.4f, 0.0f, -7.0f)); // matrix * translate_matrix
-		trans1 = glm::scale(trans1, glm::vec3(0.3f, 0.3f, 0.3f));
+		trans1 = glm::translate(trans1, glm::vec3(0.0f, 1.0f, 0.0f)); // matrix * translate_matrix
+		trans1 = glm::scale(trans1, glm::vec3(1.0f, 1.0f, 1.0f));
 		
 		glm::mat4 normalTrans1 = glm::transpose(glm::inverse(trans1));
 		glUniformMatrix4fv(normalTransformLoc, 1, GL_FALSE, glm::value_ptr(normalTrans1));
 		glUniformMatrix4fv(modelTransformLoc, 1, GL_FALSE, glm::value_ptr(trans1));
 
-		GLuint moonTexture = moon.textures[moon.materials[2].diffuse_texname];
-		glBindTexture(GL_TEXTURE_2D, moonTexture);
+		GLuint dino1Texture = dino1.textures[dino1.materials[0].diffuse_texname];
+		glBindTexture(GL_TEXTURE_2D, dino1Texture);
 
-		glDrawElements(GL_TRIANGLES, moon.numFaces, GL_UNSIGNED_INT, (void*)0);
+		glDrawElements(GL_TRIANGLES, dino1.numFaces, GL_UNSIGNED_INT, (void*)0);
 		//------------------------------------------------------------------
 
-		
+		/*
 		//----------------------------------------------------------------
 		//draw EARTH
 		glBindVertexArray(earth.vaoId);
