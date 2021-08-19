@@ -138,18 +138,33 @@ int main()
 	// set bg color to green
 	glClearColor(0.0f, 0.0f, 0.15f, 0.0f);
 
-	// var for rotations
+	// var for rotations and delta time
 	float xFactor = 0.0f;
 	float xSpeed = 1.0f;
-	float zFactor = 0.0f;
-	float zSpeed = 1.0f;
+	
 	float currentTime = glfwGetTime();
 	float prevTime = 0.0f;
 	float deltaTime = 0.0f;
+
 	float rotFactor = 0.0f;
 	float rotSpeed = 10.0f;
-	float eyeY = 0.0f;
-	float eyeSpeed = 1.5f;
+	
+	//Keyboard Input Check
+	bool checkPress = false;
+
+	//Cursor Position Check
+	double initX = 0.0f, initY = 0.0f;
+	double currX = 0.0f, currY = 0.0f;
+	bool cursorMove = false;
+
+	//Camera Definitions
+	glm::vec3 cFront = glm::vec3(0.0f, 0.0f, -1.0f);
+	glm::vec3 cPos = glm::vec3(0.0f, 0.5f, 1.0f);
+	glm::vec3 cUp = glm::vec3(0.0f, 1.0f, 0.0f);
+	glm::vec3 cRight = glm::vec3(1.0f, 0.0f, 0.0f);
+	float yaw = 0.0f;
+	float pitch = 0.0f;
+	float sensitivity = 0.5f;
 	
 
 	//depth testing
@@ -177,14 +192,6 @@ int main()
 #pragma endregion
 
 #pragma region Projection
-		// Orthopgraphic projection but make units same as pixels. origin is lower left of window
-		// projection = glm::ortho(0.0f, (GLfloat)width, 0.0f, (GLfloat)height, 0.1f, 10.0f); // when using this scale objects really high at pixel unity size
-
-		// Orthographic with stretching
-		//projection = glm::ortho(-1.0f, 1.0f, -1.0f, 1.0f, 0.1f, 10.0f);
-
-		// Orthographic with corection for stretching, resize window to see difference with previous example
-		//projection = glm::ortho(-ratio, ratio, -1.0f, 1.0f, 0.1f, 10.0f);
 
 		projection = glm::perspective(glm::radians(90.0f), ratio, 0.1f, 100.0f),
 
@@ -196,16 +203,86 @@ int main()
 #pragma endregion
 
 #pragma region View
+		glm::mat4 viewHold = glm::mat4(1.0f); // identity
 
-		glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 100.0f);
+	//Mouse Hover Rotation
+		glfwGetCursorPos(window, &initX, &initY);
+
+		if (cursorMove)
+		{
+			currX = initX;
+			currY = initY;
+			cursorMove = false;
+		}
+
+		float mouseOffsetX = initX - currX;
+		float mouseOffsetY = currY - initY;
+
+		mouseOffsetX *= sensitivity;
+		mouseOffsetY *= sensitivity;
+
+		currX = initX;
+		currY = initY;
+
+		yaw += mouseOffsetX;
+		pitch += mouseOffsetY;
+
+		glm::vec3 front;
+		front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
+		front.y = sin(glm::radians(pitch));
+		front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
+		cFront = glm::normalize(front);
+		cRight = glm::normalize(glm::cross(cFront, cUp));
+
+		currentTime = glfwGetTime();
+		deltaTime = currentTime - prevTime;
+
+		//Keyboard Input
+		if (checkPress == false) {
+			//Forward
+			if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
+				checkPress = true;
+			}
+			//Left
+			if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
+				checkPress = true;
+			}
+			//Right
+			if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
+				checkPress = true;
+			}
+			//Backward
+			if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
+				checkPress = true;
+			}
+		}
+		else {
+			//Forward
+			if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
+				cPos += cFront * deltaTime;
+			}
+			//Left
+			if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
+				cPos -= cRight * deltaTime;
+			}
+			//Right
+			if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
+				cPos -= cFront * deltaTime;
+			}
+			//Backward
+			if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
+				cPos += cRight * deltaTime;
+			}
+		}
+
+		//glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 100.0f);
 		glm::mat4 view = glm::lookAt(
-			cameraPos,  //EYE
-			//glm::vec3(0.5f, 0.0f, -1.0f),
-			glm::vec3(0.0f, 0.0f, 0.0f),  //CENTER
-			//trans[3][0], trans[3][1], trans[3][2]
-			glm::vec3(0.0f, 1.0f, 0.0f)  //UP
+			cPos,  //EYE
+			cPos+cFront,  //CENTER
+			cUp  //UP
 		);
-		glUniform3f(cameraPosLoc,cameraPos.x, cameraPos.y, cameraPos.z);
+
+		glUniform3f(cameraPosLoc,cPos.x, cPos.y, cPos.z);
 		glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
 		
 		//-------------------------------------------------------------
@@ -228,8 +305,7 @@ int main()
 		//DELTA TIME
 
 		// incerement rotation by deltaTime
-		currentTime = glfwGetTime();
-		deltaTime = currentTime - prevTime;
+		
 		rotFactor += deltaTime * rotSpeed;
 
 		prevTime = currentTime;
