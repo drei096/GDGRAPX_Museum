@@ -10,11 +10,12 @@
 #include <glm/gtc/type_ptr.hpp>
 #include "skybox.h"
 
+float skyTicks = 0.0f;
 
 int main() 
 {
 	
-	stbi_set_flip_vertically_on_load(false);
+	stbi_set_flip_vertically_on_load(true);
 
 #pragma region Initialization
 	//initialize glfw
@@ -58,28 +59,49 @@ int main()
 		"grassPatch"
 	);
 
-	ObjData dino1;
-	LoadObjFile(&dino1, "dino1/dilophosaurus.obj");
-	GLfloat dino1Offsets[] = { 0.0f, 0.0f, 0.0f };
+	ObjData eyeball;
+	LoadObjFile(&eyeball, "mars/obj/eyeball.obj");
+	GLfloat eyeballOffsets[] = { 0.0f, 0.0f, 0.0f };
 	LoadObjToMemory(
-		&dino1,
+		&eyeball,
 		1.0f,
-		dino1Offsets,
-		"dino1"
+		eyeballOffsets,
+		"eyeball"
 	);
-
 	
-
-	std::vector<std::string> faces
+	std::vector<std::string> faces_evening
 	{
-		"right_noon.png",
-		"left_noon.png",
-		"bottom_noon.png",
-		"top_noon.png",
-		"front_noon.png",
-		"back_noon.png"
+		"right.png",
+		"left.png",
+		"bottom.png",
+		"top.png",
+		"front.png",
+		"back.png"
 	};
-	SkyBoxData skybox = loadSkyBox("Assets/skybox", faces);
+
+	std::vector<std::string> faces_morning
+	{
+		"right.png",
+		"left.png",
+		"bottom.png",
+		"top.png",
+		"front.png",
+		"back.png"
+	};
+
+	std::vector<std::string> faces_afternoon
+	{
+		"right.png",
+		"left.png",
+		"bottom.png",
+		"top.png",
+		"front.png",
+		"back.png"
+	};
+
+	SkyBoxData skybox_night = loadSkyBox("Assets/skybox", faces_evening);
+	SkyBoxData skybox_morning = loadSkyBox("Assets/skybox/day", faces_morning);
+	SkyBoxData skybox_afternoon = loadSkyBox("Assets/skybox/afternoon", faces_afternoon);
 #pragma endregion
 
 #pragma region Shader Loading
@@ -148,6 +170,8 @@ int main()
 
 	float rotFactor = 0.0f;
 	float rotSpeed = 10.0f;
+
+	float walkSpeed = 10.0f;
 	
 	//Keyboard Input Check
 	bool checkPress = false;
@@ -159,7 +183,7 @@ int main()
 
 	//Camera Definitions
 	glm::vec3 cFront = glm::vec3(0.0f, 0.0f, -1.0f);
-	glm::vec3 cPos = glm::vec3(0.0f, 0.5f, 1.0f);
+	glm::vec3 cPos = glm::vec3(0.0f, -5.0f, 1.0f);
 	glm::vec3 cUp = glm::vec3(0.0f, 1.0f, 0.0f);
 	glm::vec3 cRight = glm::vec3(1.0f, 0.0f, 0.0f);
 	float yaw = 0.0f;
@@ -227,6 +251,17 @@ int main()
 		yaw += mouseOffsetX;
 		pitch += mouseOffsetY;
 
+		//ANGLE LOCKS
+		if (pitch < -80.0f)
+		{
+			pitch = -80.0f;
+		}
+
+		if (pitch > 60.0f)
+		{
+			pitch = 60.0f;
+		}
+
 		glm::vec3 front;
 		front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
 		front.y = sin(glm::radians(pitch));
@@ -236,6 +271,9 @@ int main()
 
 		currentTime = glfwGetTime();
 		deltaTime = currentTime - prevTime;
+		skyTicks += deltaTime;
+		std::cout << skyTicks << std::endl;
+		
 
 		//Keyboard Input
 		if (checkPress == false) {
@@ -259,26 +297,26 @@ int main()
 		else {
 			//Forward
 			if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-				cPos += cFront * deltaTime;
+				cPos += cFront * deltaTime * walkSpeed;
 			}
 			//Left
 			if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-				cPos -= cRight * deltaTime;
+				cPos -= cRight * deltaTime * walkSpeed;
 			}
 			//Right
 			if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-				cPos -= cFront * deltaTime;
+				cPos -= cFront * deltaTime * walkSpeed;
 			}
 			//Backward
 			if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-				cPos += cRight * deltaTime;
+				cPos += cRight * deltaTime * walkSpeed;
 			}
 		}
 
 		//glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 100.0f);
 		glm::mat4 view = glm::lookAt(
 			cPos,  //EYE
-			cPos+cFront,  //CENTER
+			cPos + cFront,  //CENTER
 			cUp  //UP
 		);
 
@@ -297,7 +335,24 @@ int main()
 
 		//--------------------------------------------
 		//DRAWING SKYBOX
-		DrawSkybox(skybox, skyboxShaderProgram, view, projection);
+		if (skyTicks >= 0.0f && skyTicks < 20.0f)
+		{
+			DrawSkybox(skybox_morning, skyboxShaderProgram, view, projection);
+		}
+		else if (skyTicks >= 20.0f && skyTicks < 40.0f)
+		{
+			DrawSkybox(skybox_afternoon, skyboxShaderProgram, view, projection);
+		}
+		else if (skyTicks >= 40.0f && skyTicks <= 60.0f)
+		{
+			DrawSkybox(skybox_night, skyboxShaderProgram, view, projection);
+		}
+
+		if (skyTicks > 60.0f)
+		{
+			skyTicks = 0.0f;
+		}
+		
 		glUseProgram(shaderProgram);
 
 
@@ -344,27 +399,27 @@ int main()
 
 		
 		//----------------------------------------------------------------
-		//draw DINO1
+		//draw mars
 		
-		glBindVertexArray(dino1.vaoId);
+		glBindVertexArray(eyeball.vaoId);
 
 		// transforms
 		trans1 = glm::mat4(1.0f); // identity
 		//trans = glm::rotate(trans, glm::radians(rotFactor), glm::vec3(0.0f, 1.0f, 0.0f)); // matrix * rotation_matrix
-		trans1 = glm::rotate(trans, glm::radians(rotFactor), glm::vec3(0.0f, 1.0f, 0.0f));
-		trans1 = glm::translate(trans1, glm::vec3(0.0f, 1.0f, 0.0f)); // matrix * translate_matrix
-		trans1 = glm::scale(trans1, glm::vec3(1.0f, 1.0f, 1.0f));
+		trans1 = glm::translate(trans1, glm::vec3(-5.0f, 15.0f, 10.0f)); // matrix * translate_matrix
+		trans1 = glm::rotate(trans1, glm::radians(rotFactor), glm::vec3(0.0f, 1.0f, 0.0f));
+		trans1 = glm::scale(trans1, glm::vec3(10.0f, 10.0f, 10.0f));
 		
 		glm::mat4 normalTrans1 = glm::transpose(glm::inverse(trans1));
 		glUniformMatrix4fv(normalTransformLoc, 1, GL_FALSE, glm::value_ptr(normalTrans1));
 		glUniformMatrix4fv(modelTransformLoc, 1, GL_FALSE, glm::value_ptr(trans1));
 
-		GLuint dino1Texture = dino1.textures[dino1.materials[0].diffuse_texname];
-		glBindTexture(GL_TEXTURE_2D, dino1Texture);
+		GLuint eyeballTexture = eyeball.textures[eyeball.materials[1].diffuse_texname];
+		glBindTexture(GL_TEXTURE_2D, eyeballTexture);
 
-		glDrawElements(GL_TRIANGLES, dino1.numFaces, GL_UNSIGNED_INT, (void*)0);
+		glDrawElements(GL_TRIANGLES, eyeball.numFaces, GL_UNSIGNED_INT, (void*)0);
 		//------------------------------------------------------------------
-
+		
 		/*
 		//----------------------------------------------------------------
 		//draw EARTH
