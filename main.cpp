@@ -148,7 +148,7 @@ int main()
 	//DIRECTIONAL LIGHT
 	GLuint lightDirLoc = glGetUniformLocation(shaderProgram, "u_light_dir");
 	//glUniform3f(lightPosLoc, 3.0f, 0.0f, 0.0f);
-	glUniform3f(lightDirLoc, 0.0f, 2.0f, 0.0f);
+	
 
 	//flag for shading
 	GLuint modelIdLoc = glGetUniformLocation(shaderProgram, "u_model_id");
@@ -172,7 +172,11 @@ int main()
 	float rotSpeed = 10.0f;
 
 	float walkSpeed = 10.0f;
-	
+
+	float lightX = 0.0f;
+	float lightY = 0.0f;
+	float lightSlow = 0.1f;
+
 	//Keyboard Input Check
 	bool checkPress = false;
 
@@ -217,7 +221,7 @@ int main()
 
 #pragma region Projection
 
-		projection = glm::perspective(glm::radians(90.0f), ratio, 0.1f, 100.0f),
+		projection = glm::perspective(glm::radians(90.0f), ratio, 0.1f, 1000.0f),
 
 			// Set projection matrix in shader
 			glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
@@ -272,7 +276,10 @@ int main()
 		currentTime = glfwGetTime();
 		deltaTime = currentTime - prevTime;
 		skyTicks += deltaTime;
-		std::cout << skyTicks << std::endl;
+		lightX += deltaTime * lightSlow;
+		lightY += deltaTime * lightSlow;
+
+		glUniform3f(lightDirLoc, glm::sin(lightX), glm::cos(lightX), 0.0f);
 		
 
 		//Keyboard Input
@@ -298,20 +305,38 @@ int main()
 			//Forward
 			if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
 				cPos += cFront * deltaTime * walkSpeed;
+				if (cPos.y > -4.0f)
+				{
+					cPos.y = -4.0f;
+				}
+				else if (cPos.y < -5.0f)
+				{
+					cPos.y = -5.0f;
+				}
 			}
 			//Left
 			if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
 				cPos -= cRight * deltaTime * walkSpeed;
 			}
-			//Right
+			//Backward
 			if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
 				cPos -= cFront * deltaTime * walkSpeed;
+				if (cPos.y > -4.0f)
+				{
+					cPos.y = -4.0f;
+				}
+				else if (cPos.y < -5.0f)
+				{
+					cPos.y = -5.0f;
+				}
 			}
-			//Backward
+			//Right
 			if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
 				cPos += cRight * deltaTime * walkSpeed;
 			}
 		}
+
+		std::cout << cPos.y << std::endl;
 
 		//glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 100.0f);
 		glm::mat4 view = glm::lookAt(
@@ -399,16 +424,16 @@ int main()
 
 		
 		//----------------------------------------------------------------
-		//draw mars
+		//draw eyeball
 		
 		glBindVertexArray(eyeball.vaoId);
 
 		// transforms
 		trans1 = glm::mat4(1.0f); // identity
 		//trans = glm::rotate(trans, glm::radians(rotFactor), glm::vec3(0.0f, 1.0f, 0.0f)); // matrix * rotation_matrix
-		trans1 = glm::translate(trans1, glm::vec3(-5.0f, 15.0f, 10.0f)); // matrix * translate_matrix
+		trans1 = glm::translate(trans1, glm::vec3(505.0f, 15.0f, 10.0f)); // matrix * translate_matrix
 		trans1 = glm::rotate(trans1, glm::radians(rotFactor), glm::vec3(0.0f, 1.0f, 0.0f));
-		trans1 = glm::scale(trans1, glm::vec3(10.0f, 10.0f, 10.0f));
+		trans1 = glm::scale(trans1, glm::vec3(25.0f, 25.0f, 25.0f));
 		
 		glm::mat4 normalTrans1 = glm::transpose(glm::inverse(trans1));
 		glUniformMatrix4fv(normalTransformLoc, 1, GL_FALSE, glm::value_ptr(normalTrans1));
