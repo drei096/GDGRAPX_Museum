@@ -60,7 +60,7 @@ int main()
 	);
 
 	ObjData eyeball;
-	LoadObjFile(&eyeball, "mars/obj/eyeball.obj");
+	LoadObjFile(&eyeball, "mars/Mars Lander Space Capsule.obj");
 	GLfloat eyeballOffsets[] = { 0.0f, 0.0f, 0.0f };
 	LoadObjToMemory(
 		&eyeball,
@@ -473,15 +473,15 @@ int main()
 		// transforms
 		trans1 = glm::mat4(1.0f); // identity
 		//trans = glm::rotate(trans, glm::radians(rotFactor), glm::vec3(0.0f, 1.0f, 0.0f)); // matrix * rotation_matrix
-		trans1 = glm::translate(trans1, glm::vec3(5.0f, 25.0f, 10.0f)); // matrix * translate_matrix
+		trans1 = glm::translate(trans1, glm::vec3(0.0f, 0.0f, 80.0f)); // matrix * translate_matrix
 		//trans1 = glm::rotate(trans1, glm::radians(rotFactor), glm::vec3(0.0f, 1.0f, 0.0f));
-		trans1 = glm::scale(trans1, glm::vec3(15.0f, 15.0f, 15.0f));
+		trans1 = glm::scale(trans1, glm::vec3(0.1f, 0.1f, 0.1f));
 		
 		glm::mat4 normalTrans1 = glm::transpose(glm::inverse(trans1));
 		glUniformMatrix4fv(normalTransformLoc, 1, GL_FALSE, glm::value_ptr(normalTrans1));
 		glUniformMatrix4fv(modelTransformLoc, 1, GL_FALSE, glm::value_ptr(trans1));
 
-		GLuint eyeballTexture = eyeball.textures[eyeball.materials[2].diffuse_texname];
+		GLuint eyeballTexture = eyeball.textures[eyeball.materials[0].diffuse_texname];
 		glBindTexture(GL_TEXTURE_2D, eyeballTexture);
 
 		glDrawElements(GL_TRIANGLES, eyeball.numFaces, GL_UNSIGNED_INT, (void*)0);
