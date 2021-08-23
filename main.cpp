@@ -31,7 +31,7 @@ int main()
 
 	// create window 
 	GLFWwindow* window;
-	window = glfwCreateWindow(1024, 768, "Gaurana_Aldrey", NULL, NULL);
+	window = glfwCreateWindow(1024, 768, "Gaurana_Aldrey, Tallador_Eryn", NULL, NULL);
 	if (window == NULL) {
 		fprintf(stderr, "Failed to load window! \n");
 		return -1;
@@ -171,11 +171,16 @@ int main()
 	float rotFactor = 0.0f;
 	float rotSpeed = 10.0f;
 
+	//movement
 	float walkSpeed = 10.0f;
 
-	float lightX = 0.0f;
+	//light directions and control
+	float lightX = -20.0f;
 	float lightY = 0.0f;
 	float lightSlow = 0.1f;
+
+	//stopping time of day
+	bool isTimeStopped = false;
 
 	//Keyboard Input Check
 	bool checkPress = false;
@@ -187,7 +192,7 @@ int main()
 
 	//Camera Definitions
 	glm::vec3 cFront = glm::vec3(0.0f, 0.0f, -1.0f);
-	glm::vec3 cPos = glm::vec3(0.0f, -5.0f, 1.0f);
+	glm::vec3 cPos = glm::vec3(0.0f, -4.0f, 1.0f);
 	glm::vec3 cUp = glm::vec3(0.0f, 1.0f, 0.0f);
 	glm::vec3 cRight = glm::vec3(1.0f, 0.0f, 0.0f);
 	float yaw = 0.0f;
@@ -275,12 +280,15 @@ int main()
 
 		currentTime = glfwGetTime();
 		deltaTime = currentTime - prevTime;
-		skyTicks += deltaTime;
-		lightX += deltaTime * lightSlow;
-		lightY += deltaTime * lightSlow;
 
-		glUniform3f(lightDirLoc, glm::sin(lightX), glm::cos(lightX), 0.0f);
-		
+		if (isTimeStopped == false)
+		{
+			skyTicks += deltaTime;
+			lightX += deltaTime * lightSlow;
+			lightY += deltaTime * lightSlow;
+		}
+
+		std::cout << skyTicks << std::endl;
 
 		//Keyboard Input
 		if (checkPress == false) {
@@ -300,18 +308,21 @@ int main()
 			if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
 				checkPress = true;
 			}
+			if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS) {
+				checkPress = true;
+			}
 		}
 		else {
 			//Forward
 			if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
 				cPos += cFront * deltaTime * walkSpeed;
-				if (cPos.y > -4.0f)
+				if (cPos.y > -3.9f)
 				{
 					cPos.y = -4.0f;
 				}
-				else if (cPos.y < -5.0f)
+				else if (cPos.y < -4.5f)
 				{
-					cPos.y = -5.0f;
+					cPos.y = -4.5f;
 				}
 			}
 			//Left
@@ -321,22 +332,34 @@ int main()
 			//Backward
 			if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
 				cPos -= cFront * deltaTime * walkSpeed;
-				if (cPos.y > -4.0f)
+				if (cPos.y > -3.9f)
 				{
 					cPos.y = -4.0f;
 				}
-				else if (cPos.y < -5.0f)
+				else if (cPos.y < -4.5f)
 				{
-					cPos.y = -5.0f;
+					cPos.y = -4.5f;
 				}
 			}
 			//Right
 			if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
 				cPos += cRight * deltaTime * walkSpeed;
 			}
+
+			if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS) {
+				if(isTimeStopped == false)
+					isTimeStopped = true;
+				else if (isTimeStopped == true)
+				{
+					isTimeStopped = false;
+				}
+			}
 		}
 
-		std::cout << cPos.y << std::endl;
+		//DIRECTIONAL LIGHT
+		glUniform3f(lightDirLoc, glm::sin(lightX), glm::cos(lightX), 0.0f);
+		//POINT LIGHT
+		//glUniform3f(lightPosLoc, glm::sin(lightX), glm::cos(lightX), 0.0f);
 
 		//glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 100.0f);
 		glm::mat4 view = glm::lookAt(
@@ -344,6 +367,24 @@ int main()
 			cPos + cFront,  //CENTER
 			cUp  //UP
 		);
+
+		//camera pos locks
+		if (cPos.z < -48.0f)
+		{
+			cPos.z = -48.0f;
+		}
+		if (cPos.z > 98.0f)
+		{
+			cPos.z = 98.0f;
+		}
+		if (cPos.x > 73.0f)
+		{
+			cPos.x = 73.0f;
+		}
+		if (cPos.x < -72.0f)
+		{
+			cPos.x = -72.0f;
+		}
 
 		glUniform3f(cameraPosLoc,cPos.x, cPos.y, cPos.z);
 		glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
@@ -402,6 +443,7 @@ int main()
 		trans = glm::mat4(1.0f); // identity
 		//trans = glm::rotate(trans, glm::radians(rotFactor), glm::vec3(0.0f, 1.0f, 0.0f)); // matrix * rotation_matrix
 		trans = glm::translate(trans, glm::vec3(0.0f, -10.0f, 25.0f)); // matrix * translate_matrix
+		trans = glm::rotate(trans, glm::radians(rotFactor * 0.1f), glm::vec3(0.0f, 1.0f, 0.0f));
 		trans = glm::rotate(trans, glm::radians(270.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 		trans = glm::rotate(trans, glm::radians(270.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 		trans = glm::scale(trans, glm::vec3(0.5f, 0.5f, 0.5f));
@@ -431,15 +473,15 @@ int main()
 		// transforms
 		trans1 = glm::mat4(1.0f); // identity
 		//trans = glm::rotate(trans, glm::radians(rotFactor), glm::vec3(0.0f, 1.0f, 0.0f)); // matrix * rotation_matrix
-		trans1 = glm::translate(trans1, glm::vec3(505.0f, 15.0f, 10.0f)); // matrix * translate_matrix
-		trans1 = glm::rotate(trans1, glm::radians(rotFactor), glm::vec3(0.0f, 1.0f, 0.0f));
-		trans1 = glm::scale(trans1, glm::vec3(25.0f, 25.0f, 25.0f));
+		trans1 = glm::translate(trans1, glm::vec3(5.0f, 25.0f, 10.0f)); // matrix * translate_matrix
+		//trans1 = glm::rotate(trans1, glm::radians(rotFactor), glm::vec3(0.0f, 1.0f, 0.0f));
+		trans1 = glm::scale(trans1, glm::vec3(15.0f, 15.0f, 15.0f));
 		
 		glm::mat4 normalTrans1 = glm::transpose(glm::inverse(trans1));
 		glUniformMatrix4fv(normalTransformLoc, 1, GL_FALSE, glm::value_ptr(normalTrans1));
 		glUniformMatrix4fv(modelTransformLoc, 1, GL_FALSE, glm::value_ptr(trans1));
 
-		GLuint eyeballTexture = eyeball.textures[eyeball.materials[1].diffuse_texname];
+		GLuint eyeballTexture = eyeball.textures[eyeball.materials[2].diffuse_texname];
 		glBindTexture(GL_TEXTURE_2D, eyeballTexture);
 
 		glDrawElements(GL_TRIANGLES, eyeball.numFaces, GL_UNSIGNED_INT, (void*)0);
