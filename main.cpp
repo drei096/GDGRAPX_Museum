@@ -59,14 +59,14 @@ int main()
 		"grassPatch"
 	);
 
-	ObjData eyeball;
-	LoadObjFile(&eyeball, "mars/Mars Lander Space Capsule.obj");
-	GLfloat eyeballOffsets[] = { 0.0f, 0.0f, 0.0f };
+	ObjData spaceship;
+	LoadObjFile(&spaceship, "mars/Mars Lander Space Capsule.obj");
+	GLfloat spaceshipOffsets[] = { 0.0f, 0.0f, 0.0f };
 	LoadObjToMemory(
-		&eyeball,
+		&spaceship,
 		1.0f,
-		eyeballOffsets,
-		"eyeball"
+		spaceshipOffsets,
+		"spaceship"
 	);
 	
 	std::vector<std::string> faces_evening
@@ -110,7 +110,7 @@ int main()
 	GLuint skyboxShaderProgram = LoadShaders("Shaders/skybox_vertex.shader", "Shaders/skybox_fragment.shader");
 
 	//load shader program
-	GLuint shaderProgram = LoadShaders("Shaders/phong_vertex.shader", "Shaders/phong_directional_fragment.shader");
+	GLuint shaderProgram = LoadShaders("Shaders/phong_vertex.shader", "Shaders/phong_fragment.shader");
 	glUseProgram(shaderProgram);
 
 	GLuint colorLoc = glGetUniformLocation(shaderProgram, "u_color");
@@ -152,7 +152,6 @@ int main()
 
 	//flag for shading
 	GLuint modelIdLoc = glGetUniformLocation(shaderProgram, "u_model_id");
-	glUniform1f(modelIdLoc, 1.0f);
 
 
 #pragma endregion
@@ -192,7 +191,7 @@ int main()
 
 	//Camera Definitions
 	glm::vec3 cFront = glm::vec3(0.0f, 0.0f, -1.0f);
-	glm::vec3 cPos = glm::vec3(0.0f, -4.0f, 1.0f);
+	glm::vec3 cPos = glm::vec3(0.0f, -3.0f, 1.0f);
 	glm::vec3 cUp = glm::vec3(0.0f, 1.0f, 0.0f);
 	glm::vec3 cRight = glm::vec3(1.0f, 0.0f, 0.0f);
 	float yaw = 0.0f;
@@ -288,8 +287,6 @@ int main()
 			lightY += deltaTime * lightSlow;
 		}
 
-		std::cout << skyTicks << std::endl;
-
 		//Keyboard Input
 		if (checkPress == false) {
 			//Forward
@@ -316,13 +313,13 @@ int main()
 			//Forward
 			if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
 				cPos += cFront * deltaTime * walkSpeed;
-				if (cPos.y > -3.9f)
+				if (cPos.y > -3.0f)
+				{
+					cPos.y = -3.0f;
+				}
+				else if (cPos.y < -4.0f)
 				{
 					cPos.y = -4.0f;
-				}
-				else if (cPos.y < -4.5f)
-				{
-					cPos.y = -4.5f;
 				}
 			}
 			//Left
@@ -332,13 +329,13 @@ int main()
 			//Backward
 			if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
 				cPos -= cFront * deltaTime * walkSpeed;
-				if (cPos.y > -3.9f)
+				if (cPos.y > -3.0f)
+				{
+					cPos.y = -3.0f;
+				}
+				else if (cPos.y < -4.0f)
 				{
 					cPos.y = -4.0f;
-				}
-				else if (cPos.y < -4.5f)
-				{
-					cPos.y = -4.5f;
 				}
 			}
 			//Right
@@ -358,6 +355,7 @@ int main()
 
 		//DIRECTIONAL LIGHT
 		glUniform3f(lightDirLoc, glm::sin(lightX), glm::cos(lightX), 0.0f);
+		std::cout << glm::sin(lightX) << " " << glm::cos(lightX) << std::endl;
 		//POINT LIGHT
 		//glUniform3f(lightPosLoc, glm::sin(lightX), glm::cos(lightX), 0.0f);
 
@@ -438,6 +436,7 @@ int main()
 		//----------------------------------------------------------
 		//draw GRASS
 		glBindVertexArray(grassPatch.vaoId);
+		glUniform1f(modelIdLoc, 1.2f);
 
 		// transforms
 		trans = glm::mat4(1.0f); // identity
@@ -466,14 +465,15 @@ int main()
 
 		
 		//----------------------------------------------------------------
-		//draw eyeball
+		//draw spaceship
 		
-		glBindVertexArray(eyeball.vaoId);
+		glBindVertexArray(spaceship.vaoId);
+		glUniform1f(modelIdLoc, 1.2f);
 
 		// transforms
 		trans1 = glm::mat4(1.0f); // identity
 		//trans = glm::rotate(trans, glm::radians(rotFactor), glm::vec3(0.0f, 1.0f, 0.0f)); // matrix * rotation_matrix
-		trans1 = glm::translate(trans1, glm::vec3(0.0f, 0.0f, 80.0f)); // matrix * translate_matrix
+		trans1 = glm::translate(trans1, glm::vec3(0.0f, -2.0f, 80.0f)); // matrix * translate_matrix
 		//trans1 = glm::rotate(trans1, glm::radians(rotFactor), glm::vec3(0.0f, 1.0f, 0.0f));
 		trans1 = glm::scale(trans1, glm::vec3(0.1f, 0.1f, 0.1f));
 		
@@ -481,10 +481,10 @@ int main()
 		glUniformMatrix4fv(normalTransformLoc, 1, GL_FALSE, glm::value_ptr(normalTrans1));
 		glUniformMatrix4fv(modelTransformLoc, 1, GL_FALSE, glm::value_ptr(trans1));
 
-		GLuint eyeballTexture = eyeball.textures[eyeball.materials[0].diffuse_texname];
-		glBindTexture(GL_TEXTURE_2D, eyeballTexture);
+		GLuint spaceshipTexture = spaceship.textures[spaceship.materials[0].diffuse_texname];
+		glBindTexture(GL_TEXTURE_2D, spaceshipTexture);
 
-		glDrawElements(GL_TRIANGLES, eyeball.numFaces, GL_UNSIGNED_INT, (void*)0);
+		glDrawElements(GL_TRIANGLES, spaceship.numFaces, GL_UNSIGNED_INT, (void*)0);
 		//------------------------------------------------------------------
 		
 		/*
