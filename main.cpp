@@ -481,7 +481,9 @@ int main()
 		glUniformMatrix4fv(normalTransformLoc, 1, GL_FALSE, glm::value_ptr(normalTrans1));
 		glUniformMatrix4fv(modelTransformLoc, 1, GL_FALSE, glm::value_ptr(trans1));
 
-		GLuint spaceshipTexture = spaceship.textures[spaceship.materials[0].diffuse_texname];
+		GLuint spaceshipTexture2 = spaceship.textures[spaceship.materials[0].diffuse_texname];
+		glBindTexture(GL_TEXTURE_2D, spaceshipTexture2);
+		GLuint spaceshipTexture = spaceship.textures[spaceship.materials[1].diffuse_texname];
 		glBindTexture(GL_TEXTURE_2D, spaceshipTexture);
 
 		glDrawElements(GL_TRIANGLES, spaceship.numFaces, GL_UNSIGNED_INT, (void*)0);
