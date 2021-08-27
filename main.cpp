@@ -68,6 +68,16 @@ int main()
 		spaceshipOffsets,
 		"spaceship"
 	);
+
+	ObjData serverrack;
+	LoadObjFile(&serverrack, "laptop/ServerV2+console.obj");
+	GLfloat serverrackOffsets[] = { 0.0f, 0.0f, 0.0f };
+	LoadObjToMemory(
+		&serverrack,
+		1.0f,
+		serverrackOffsets,
+		"serverrack"
+	);
 	
 	std::vector<std::string> faces_evening
 	{
@@ -489,6 +499,31 @@ int main()
 		glDrawElements(GL_TRIANGLES, spaceship.numFaces, GL_UNSIGNED_INT, (void*)0);
 		//------------------------------------------------------------------
 		
+
+		//----------------------------------------------------------------
+		//server rack
+
+		glBindVertexArray(serverrack.vaoId);
+		glUniform1f(modelIdLoc, 1.2f);
+
+		// transforms
+		trans2 = glm::mat4(1.0f); // identity
+		trans2 = glm::translate(trans2, glm::vec3(0.0f, -4.0f, 0.0f));
+		trans2 = glm::rotate(trans2, glm::radians(rotFactor), glm::vec3(0.0f, 0.0f, 1.0f));
+		trans2 = glm::rotate(trans2, glm::radians(rotFactor), glm::vec3(0.0f, 1.0f, 0.0f)); // matrix * rotation_matrix
+		trans2 = glm::rotate(trans2, glm::radians(rotFactor), glm::vec3(1.0f, 0.0f, 0.0f));
+		trans2 = glm::scale(trans2, glm::vec3(1.0f, 1.0f, 1.0f));
+
+		glm::mat4 normalTrans2 = glm::transpose(glm::inverse(trans2));
+		glUniformMatrix4fv(normalTransformLoc, 1, GL_FALSE, glm::value_ptr(normalTrans2));
+		glUniformMatrix4fv(modelTransformLoc, 1, GL_FALSE, glm::value_ptr(trans2));
+
+		GLuint serverrackTexture = serverrack.textures[serverrack.materials[0].diffuse_texname];
+		glBindTexture(GL_TEXTURE_2D, serverrackTexture);
+
+		glDrawElements(GL_TRIANGLES, serverrack.numFaces, GL_UNSIGNED_INT, (void*)0);
+		//------------------------------------------------------------------
+
 		/*
 		//----------------------------------------------------------------
 		//draw EARTH
