@@ -78,6 +78,36 @@ int main()
 		serverrackOffsets,
 		"serverrack"
 	);
+
+	ObjData csuTower;
+	LoadObjFile(&csuTower, "comp/10104_Computer_CPU_Case_v1_L3.obj");
+	GLfloat csuTowerOffsets[] = { 0.0f, 0.0f, 0.0f };
+	LoadObjToMemory(
+		&csuTower,
+		1.0f,
+		csuTowerOffsets,
+		"csuTower"
+	);
+
+	ObjData woodHouse;
+	LoadObjFile(&woodHouse, "house/farmhouse_obj.obj");
+	GLfloat woodHouseOffsets[] = { 0.0f, 0.0f, 0.0f };
+	LoadObjToMemory(
+		&woodHouse,
+		1.0f,
+		woodHouseOffsets,
+		"woodHouse"
+	);
+
+	ObjData planet;
+	LoadObjFile(&planet, "mars/Earth.obj");
+	GLfloat planetOffsets[] = { 0.0f, 0.0f, 0.0f };
+	LoadObjToMemory(
+		&planet,
+		1.0f,
+		planetOffsets,
+		"planet"
+	);
 	
 	std::vector<std::string> faces_evening
 	{
@@ -147,6 +177,15 @@ int main()
 
 	glm::mat4 trans2 = glm::mat4(1.0f); // identity
 	glUniformMatrix4fv(modelTransformLoc, 1, GL_FALSE, glm::value_ptr(trans2));
+
+	glm::mat4 trans3 = glm::mat4(1.0f); // identity
+	glUniformMatrix4fv(modelTransformLoc, 1, GL_FALSE, glm::value_ptr(trans3));
+
+	glm::mat4 trans4 = glm::mat4(1.0f); // identity
+	glUniformMatrix4fv(modelTransformLoc, 1, GL_FALSE, glm::value_ptr(trans4));
+
+	glm::mat4 trans5 = glm::mat4(1.0f); // identity
+	glUniformMatrix4fv(modelTransformLoc, 1, GL_FALSE, glm::value_ptr(trans5));
 
 	// define projection matrix
 	glm::mat4 projection = glm::mat4(1.0f);
@@ -218,7 +257,6 @@ int main()
 	//glCullFace(GL_BACK); // set which face to cull
 	//glFrontFace(GL_CCW); // set the front face orientation
 
-	//std::cout << moon.textures[0] << std::endl;
 
 	while (!glfwWindowShouldClose(window)) 
 	{
@@ -452,7 +490,7 @@ int main()
 		trans = glm::mat4(1.0f); // identity
 		//trans = glm::rotate(trans, glm::radians(rotFactor), glm::vec3(0.0f, 1.0f, 0.0f)); // matrix * rotation_matrix
 		trans = glm::translate(trans, glm::vec3(0.0f, -10.0f, 25.0f)); // matrix * translate_matrix
-		trans = glm::rotate(trans, glm::radians(rotFactor * 0.1f), glm::vec3(0.0f, 1.0f, 0.0f));
+		//trans = glm::rotate(trans, glm::radians(rotFactor * 0.1f), glm::vec3(0.0f, 1.0f, 0.0f));
 		trans = glm::rotate(trans, glm::radians(270.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 		trans = glm::rotate(trans, glm::radians(270.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 		trans = glm::scale(trans, glm::vec3(0.5f, 0.5f, 0.5f));
@@ -522,6 +560,79 @@ int main()
 		glBindTexture(GL_TEXTURE_2D, serverrackTexture);
 
 		glDrawElements(GL_TRIANGLES, serverrack.numFaces, GL_UNSIGNED_INT, (void*)0);
+		//------------------------------------------------------------------
+
+		//----------------------------------------------------------------
+		//house
+
+		glBindVertexArray(woodHouse.vaoId);
+		glUniform1f(modelIdLoc, 1.2f);
+
+		// transforms
+		trans3 = glm::mat4(1.0f); // identity
+		trans3 = glm::translate(trans3, glm::vec3(-20.0f, -7.0f, 0.0f));
+		//trans3 = glm::rotate(trans3, glm::radians(rotFactor), glm::vec3(0.0f, 0.0f, 1.0f));
+		//trans3 = glm::rotate(trans3, glm::radians(rotFactor), glm::vec3(0.0f, 1.0f, 0.0f)); // matrix * rotation_matrix
+		//trans3 = glm::rotate(trans3, glm::radians(rotFactor), glm::vec3(1.0f, 0.0f, 0.0f));
+		trans3 = glm::scale(trans3, glm::vec3(1.0f, 1.0f, 1.0f));
+
+		glm::mat4 normalTrans3 = glm::transpose(glm::inverse(trans3));
+		glUniformMatrix4fv(normalTransformLoc, 1, GL_FALSE, glm::value_ptr(normalTrans3));
+		glUniformMatrix4fv(modelTransformLoc, 1, GL_FALSE, glm::value_ptr(trans3));
+
+		GLuint woodHouseTexture = woodHouse.textures[woodHouse.materials[0].diffuse_texname];
+		glBindTexture(GL_TEXTURE_2D, woodHouseTexture);
+
+		glDrawElements(GL_TRIANGLES, woodHouse.numFaces, GL_UNSIGNED_INT, (void*)0);
+		//------------------------------------------------------------------
+
+		//----------------------------------------------------------------
+		//draw cpu tower
+
+		glBindVertexArray(csuTower.vaoId);
+		glUniform1f(modelIdLoc, 1.2f);
+
+		// transforms
+		trans4 = glm::mat4(1.0f); // identity
+		trans4 = glm::translate(trans4, glm::vec3(5.0f, 0.0f, 30.0f));
+		//trans3 = glm::rotate(trans3, glm::radians(rotFactor), glm::vec3(0.0f, 0.0f, 1.0f));
+		//trans3 = glm::rotate(trans3, glm::radians(rotFactor), glm::vec3(0.0f, 1.0f, 0.0f)); // matrix * rotation_matrix
+		trans4 = glm::rotate(trans4, glm::radians(rotFactor), glm::vec3(0.0f, 0.0f, 1.0f));
+		trans4 = glm::scale(trans4, glm::vec3(0.05f, 0.05f, 0.05f));
+
+		glm::mat4 normalTrans4 = glm::transpose(glm::inverse(trans4));
+		glUniformMatrix4fv(normalTransformLoc, 1, GL_FALSE, glm::value_ptr(normalTrans4));
+		glUniformMatrix4fv(modelTransformLoc, 1, GL_FALSE, glm::value_ptr(trans4));
+
+		GLuint csuTowerTexture = csuTower.textures[csuTower.materials[0].diffuse_texname];
+		glBindTexture(GL_TEXTURE_2D, csuTowerTexture);
+
+		glDrawElements(GL_TRIANGLES, csuTower.numFaces, GL_UNSIGNED_INT, (void*)0);
+		//------------------------------------------------------------------
+
+
+		//----------------------------------------------------------------
+		//draw planet
+
+		glBindVertexArray(planet.vaoId);
+		glUniform1f(modelIdLoc, 1.2f);
+
+		// transforms
+		trans5 = glm::mat4(1.0f); // identity
+		trans5 = glm::translate(trans5, glm::vec3(150.0f, 100.0f, 0.0f));
+		//trans3 = glm::rotate(trans3, glm::radians(rotFactor), glm::vec3(0.0f, 0.0f, 1.0f));
+		trans5 = glm::rotate(trans5, glm::radians(45.0f), glm::vec3(1.0f, 0.0f, 0.0f)); // matrix * rotation_matrix
+		trans5 = glm::rotate(trans5, glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+		trans5 = glm::scale(trans5, glm::vec3(10.0f, 10.0f, 10.0f));
+
+		glm::mat4 normalTrans5 = glm::transpose(glm::inverse(trans5));
+		glUniformMatrix4fv(normalTransformLoc, 1, GL_FALSE, glm::value_ptr(normalTrans5));
+		glUniformMatrix4fv(modelTransformLoc, 1, GL_FALSE, glm::value_ptr(trans5));
+
+		GLuint planetTexture = planet.textures[planet.materials[0].diffuse_texname];
+		glBindTexture(GL_TEXTURE_2D, planetTexture);
+
+		glDrawElements(GL_TRIANGLES, planet.numFaces, GL_UNSIGNED_INT, (void*)0);
 		//------------------------------------------------------------------
 
 		/*
