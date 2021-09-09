@@ -96,7 +96,7 @@ int main()
 
 	//Moon 2K.obj
 	ObjData planet;
-	LoadObjFile(&planet, "mars/Earth.obj");
+	LoadObjFile(&planet, "mars/Mercury 1K.obj");
 	GLfloat planetOffsets[] = { 0.0f, 0.0f, 0.0f };
 	LoadObjToMemory(
 		&planet,
@@ -651,20 +651,21 @@ int main()
 
 		// transforms
 		trans5 = glm::mat4(1.0f); // identity
-		trans5 = glm::translate(trans5, glm::vec3(150.0f, 100.0f, 0.0f));
+		trans5 = glm::translate(trans5, glm::vec3(0.0f, 0.0f, 0.0f));
 		//trans3 = glm::rotate(trans3, glm::radians(rotFactor), glm::vec3(0.0f, 0.0f, 1.0f));
 		trans5 = glm::rotate(trans5, glm::radians(45.0f), glm::vec3(1.0f, 0.0f, 0.0f)); // matrix * rotation_matrix
 		trans5 = glm::rotate(trans5, glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-		trans5 = glm::scale(trans5, glm::vec3(10.0f, 10.0f, 10.0f));
+		trans5 = glm::scale(trans5, glm::vec3(50.0f, 50.0f, 50.0f));
 
 		glm::mat4 normalTrans5 = glm::transpose(glm::inverse(trans5));
 		glUniformMatrix4fv(normalTransformLoc, 1, GL_FALSE, glm::value_ptr(normalTrans5));
 		glUniformMatrix4fv(modelTransformLoc, 1, GL_FALSE, glm::value_ptr(trans5));
 
+		
 		glActiveTexture(GL_TEXTURE0);
 		GLuint planetTexture = planet.textures[planet.materials[0].diffuse_texname];
 		glBindTexture(GL_TEXTURE_2D, planetTexture);
-
+		
 		/*
 		glActiveTexture(GL_TEXTURE1);
 		GLuint planetTextureNormal = planet.textures[planet.materials[0].bump_texname];
@@ -686,14 +687,15 @@ int main()
 		trans6 = glm::mat4(1.0f); // identity
 		trans6 = glm::translate(trans6, glm::vec3(0.0f, 0.0f, 0.0f));
 		//trans3 = glm::rotate(trans3, glm::radians(rotFactor), glm::vec3(0.0f, 0.0f, 1.0f));
-		trans6 = glm::rotate(trans6, glm::radians(45.0f), glm::vec3(1.0f, 0.0f, 0.0f)); // matrix * rotation_matrix
-		trans6 = glm::rotate(trans6, glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-		trans6 = glm::scale(trans6, glm::vec3(0.5f, 0.5f, 0.5f));
+		//trans6 = glm::rotate(trans6, glm::radians(45.0f), glm::vec3(1.0f, 0.0f, 0.0f)); // matrix * rotation_matrix
+		//trans6 = glm::rotate(trans6, glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+		trans6 = glm::scale(trans6, glm::vec3(0.2f, 0.2f, 0.2f));
 
 		glm::mat4 normalTrans6 = glm::transpose(glm::inverse(trans6));
 		glUniformMatrix4fv(normalTransformLoc, 1, GL_FALSE, glm::value_ptr(normalTrans6));
 		glUniformMatrix4fv(modelTransformLoc, 1, GL_FALSE, glm::value_ptr(trans6));
 
+		/*
 		glActiveTexture(GL_TEXTURE0);
 		GLuint rocketTexture = rocket.textures[rocket.materials[0].diffuse_texname];
 		glBindTexture(GL_TEXTURE_2D, rocketTexture);
@@ -701,6 +703,7 @@ int main()
 		glActiveTexture(GL_TEXTURE2);
 		GLuint rocketTexture2 = rocket.textures[rocket.materials[1].diffuse_texname];
 		glBindTexture(GL_TEXTURE_2D, rocketTexture2);
+		*/
 
 		glDrawElements(GL_TRIANGLES, planet.numFaces, GL_UNSIGNED_INT, (void*)0);
 		//------------------------------------------------------------------
