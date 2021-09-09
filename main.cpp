@@ -55,8 +55,7 @@ int main()
 	LoadObjToMemory(
 		&grassPatch,
 		1.0f,
-		grassPatchOffsets,
-		"grassPatch"
+		grassPatchOffsets
 	);
 
 	ObjData spaceship;
@@ -65,8 +64,7 @@ int main()
 	LoadObjToMemory(
 		&spaceship,
 		1.0f,
-		spaceshipOffsets,
-		"spaceship"
+		spaceshipOffsets
 	);
 
 	ObjData serverrack;
@@ -75,8 +73,7 @@ int main()
 	LoadObjToMemory(
 		&serverrack,
 		1.0f,
-		serverrackOffsets,
-		"serverrack"
+		serverrackOffsets
 	);
 
 	ObjData csuTower;
@@ -85,8 +82,7 @@ int main()
 	LoadObjToMemory(
 		&csuTower,
 		1.0f,
-		csuTowerOffsets,
-		"csuTower"
+		csuTowerOffsets
 	);
 
 	ObjData woodHouse;
@@ -95,18 +91,26 @@ int main()
 	LoadObjToMemory(
 		&woodHouse,
 		1.0f,
-		woodHouseOffsets,
-		"woodHouse"
+		woodHouseOffsets
 	);
 
+	//Moon 2K.obj
 	ObjData planet;
 	LoadObjFile(&planet, "mars/Earth.obj");
 	GLfloat planetOffsets[] = { 0.0f, 0.0f, 0.0f };
 	LoadObjToMemory(
 		&planet,
 		1.0f,
-		planetOffsets,
-		"planet"
+		planetOffsets
+	);
+
+	ObjData rocket;
+	LoadObjFile(&rocket, "rocket/12215_rocket_v3_l1.obj");
+	GLfloat rocketOffsets[] = { 0.0f, 0.0f, 0.0f };
+	LoadObjToMemory(
+		&rocket,
+		1.0f,
+		rocketOffsets
 	);
 	
 	std::vector<std::string> faces_evening
@@ -187,6 +191,9 @@ int main()
 	glm::mat4 trans5 = glm::mat4(1.0f); // identity
 	glUniformMatrix4fv(modelTransformLoc, 1, GL_FALSE, glm::value_ptr(trans5));
 
+	glm::mat4 trans6 = glm::mat4(1.0f); // identity
+	glUniformMatrix4fv(modelTransformLoc, 1, GL_FALSE, glm::value_ptr(trans6));
+
 	// define projection matrix
 	glm::mat4 projection = glm::mat4(1.0f);
 	//glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
@@ -198,9 +205,19 @@ int main()
 	GLuint lightDirLoc = glGetUniformLocation(shaderProgram, "u_light_dir");
 	//glUniform3f(lightPosLoc, 3.0f, 0.0f, 0.0f);
 	
+	//for multitexturing
+	GLuint diffuseTexLoc = glGetUniformLocation(shaderProgram, "texture_diffuse"); 
+	GLuint secondaryDiffuseTexLoc = glGetUniformLocation(shaderProgram, "texture_secondary_diffuse");
+	GLuint tertiaryDiffuseTexLoc = glGetUniformLocation(shaderProgram, "texture_tertiary_diffuse");
+	GLuint normalTexLoc = glGetUniformLocation(shaderProgram, "texture_normal");
+	glUniform1i(diffuseTexLoc, 0);
+	glUniform1i(normalTexLoc, 1);
+	glUniform1i(secondaryDiffuseTexLoc, 2);
+	glUniform1i(tertiaryDiffuseTexLoc, 3);
 
 	//flag for shading
 	GLuint modelIdLoc = glGetUniformLocation(shaderProgram, "u_model_id");
+	GLuint texTypeIdLoc = glGetUniformLocation(shaderProgram, "u_tex_type");
 
 
 #pragma endregion
@@ -223,7 +240,7 @@ int main()
 	float walkSpeed = 10.0f;
 
 	//light directions and control
-	float lightX = -20.0f;
+	float lightX = 45.0f;
 	float lightY = 0.0f;
 	float lightSlow = 0.1f;
 
@@ -240,7 +257,7 @@ int main()
 
 	//Camera Definitions
 	glm::vec3 cFront = glm::vec3(0.0f, 0.0f, -1.0f);
-	glm::vec3 cPos = glm::vec3(0.0f, -3.0f, 1.0f);
+	glm::vec3 cPos = glm::vec3(-5.0f, -3.0f, 1.0f);
 	glm::vec3 cUp = glm::vec3(0.0f, 1.0f, 0.0f);
 	glm::vec3 cRight = glm::vec3(1.0f, 0.0f, 0.0f);
 	float yaw = 0.0f;
@@ -403,7 +420,7 @@ int main()
 
 		//DIRECTIONAL LIGHT
 		glUniform3f(lightDirLoc, glm::sin(lightX), glm::cos(lightX), 0.0f);
-		std::cout << glm::sin(lightX) << " " << glm::cos(lightX) << std::endl;
+		//std::cout << glm::sin(lightX) << " " << glm::cos(lightX) << std::endl;
 		//POINT LIGHT
 		//glUniform3f(lightPosLoc, glm::sin(lightX), glm::cos(lightX), 0.0f);
 
@@ -485,6 +502,7 @@ int main()
 		//draw GRASS
 		glBindVertexArray(grassPatch.vaoId);
 		glUniform1f(modelIdLoc, 1.2f);
+		glUniform1f(texTypeIdLoc, 1.0f);
 
 		// transforms
 		trans = glm::mat4(1.0f); // identity
@@ -506,8 +524,11 @@ int main()
 		glBindTexture(GL_TEXTURE_2D, grassPatchTexture);
 	
 
-		//drawbackpack
+		//draw grass
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		glDrawElements(GL_TRIANGLES, grassPatch.numFaces, GL_UNSIGNED_INT, (void*)0);
+		glDisable(GL_BLEND);
 
 		//---------------------------------------------------------------------
 
@@ -517,6 +538,7 @@ int main()
 		
 		glBindVertexArray(spaceship.vaoId);
 		glUniform1f(modelIdLoc, 1.2f);
+		glUniform1f(texTypeIdLoc, 1.0f);
 
 		// transforms
 		trans1 = glm::mat4(1.0f); // identity
@@ -529,8 +551,7 @@ int main()
 		glUniformMatrix4fv(normalTransformLoc, 1, GL_FALSE, glm::value_ptr(normalTrans1));
 		glUniformMatrix4fv(modelTransformLoc, 1, GL_FALSE, glm::value_ptr(trans1));
 
-		GLuint spaceshipTexture2 = spaceship.textures[spaceship.materials[0].diffuse_texname];
-		glBindTexture(GL_TEXTURE_2D, spaceshipTexture2);
+		glActiveTexture(GL_TEXTURE0);
 		GLuint spaceshipTexture = spaceship.textures[spaceship.materials[1].diffuse_texname];
 		glBindTexture(GL_TEXTURE_2D, spaceshipTexture);
 
@@ -543,10 +564,11 @@ int main()
 
 		glBindVertexArray(serverrack.vaoId);
 		glUniform1f(modelIdLoc, 1.2f);
+		glUniform1f(texTypeIdLoc, 1.0f);
 
 		// transforms
 		trans2 = glm::mat4(1.0f); // identity
-		trans2 = glm::translate(trans2, glm::vec3(0.0f, -4.0f, 0.0f));
+		trans2 = glm::translate(trans2, glm::vec3(0.0f, 0.0f, 0.0f));
 		trans2 = glm::rotate(trans2, glm::radians(rotFactor), glm::vec3(0.0f, 0.0f, 1.0f));
 		trans2 = glm::rotate(trans2, glm::radians(rotFactor), glm::vec3(0.0f, 1.0f, 0.0f)); // matrix * rotation_matrix
 		trans2 = glm::rotate(trans2, glm::radians(rotFactor), glm::vec3(1.0f, 0.0f, 0.0f));
@@ -556,6 +578,7 @@ int main()
 		glUniformMatrix4fv(normalTransformLoc, 1, GL_FALSE, glm::value_ptr(normalTrans2));
 		glUniformMatrix4fv(modelTransformLoc, 1, GL_FALSE, glm::value_ptr(trans2));
 
+		glActiveTexture(GL_TEXTURE0);
 		GLuint serverrackTexture = serverrack.textures[serverrack.materials[0].diffuse_texname];
 		glBindTexture(GL_TEXTURE_2D, serverrackTexture);
 
@@ -566,7 +589,8 @@ int main()
 		//house
 
 		glBindVertexArray(woodHouse.vaoId);
-		glUniform1f(modelIdLoc, 1.2f);
+		glUniform1f(modelIdLoc, 1.3f);
+		glUniform1f(texTypeIdLoc, 1.0f);
 
 		// transforms
 		trans3 = glm::mat4(1.0f); // identity
@@ -580,8 +604,13 @@ int main()
 		glUniformMatrix4fv(normalTransformLoc, 1, GL_FALSE, glm::value_ptr(normalTrans3));
 		glUniformMatrix4fv(modelTransformLoc, 1, GL_FALSE, glm::value_ptr(trans3));
 
+		glActiveTexture(GL_TEXTURE0);
 		GLuint woodHouseTexture = woodHouse.textures[woodHouse.materials[0].diffuse_texname];
 		glBindTexture(GL_TEXTURE_2D, woodHouseTexture);
+
+		glActiveTexture(GL_TEXTURE1);
+		GLuint woodHouseNormal = woodHouse.textures[woodHouse.materials[0].bump_texname];
+		glBindTexture(GL_TEXTURE_2D, woodHouseNormal);
 
 		glDrawElements(GL_TRIANGLES, woodHouse.numFaces, GL_UNSIGNED_INT, (void*)0);
 		//------------------------------------------------------------------
@@ -591,6 +620,7 @@ int main()
 
 		glBindVertexArray(csuTower.vaoId);
 		glUniform1f(modelIdLoc, 1.2f);
+		glUniform1f(texTypeIdLoc, 1.0f);
 
 		// transforms
 		trans4 = glm::mat4(1.0f); // identity
@@ -604,6 +634,7 @@ int main()
 		glUniformMatrix4fv(normalTransformLoc, 1, GL_FALSE, glm::value_ptr(normalTrans4));
 		glUniformMatrix4fv(modelTransformLoc, 1, GL_FALSE, glm::value_ptr(trans4));
 
+		glActiveTexture(GL_TEXTURE0);
 		GLuint csuTowerTexture = csuTower.textures[csuTower.materials[0].diffuse_texname];
 		glBindTexture(GL_TEXTURE_2D, csuTowerTexture);
 
@@ -616,6 +647,7 @@ int main()
 
 		glBindVertexArray(planet.vaoId);
 		glUniform1f(modelIdLoc, 1.2f);
+		glUniform1f(texTypeIdLoc, 1.0f);
 
 		// transforms
 		trans5 = glm::mat4(1.0f); // identity
@@ -629,37 +661,56 @@ int main()
 		glUniformMatrix4fv(normalTransformLoc, 1, GL_FALSE, glm::value_ptr(normalTrans5));
 		glUniformMatrix4fv(modelTransformLoc, 1, GL_FALSE, glm::value_ptr(trans5));
 
+		glActiveTexture(GL_TEXTURE0);
 		GLuint planetTexture = planet.textures[planet.materials[0].diffuse_texname];
 		glBindTexture(GL_TEXTURE_2D, planetTexture);
+
+		/*
+		glActiveTexture(GL_TEXTURE1);
+		GLuint planetTextureNormal = planet.textures[planet.materials[0].bump_texname];
+		glBindTexture(GL_TEXTURE_2D, planetTextureNormal);
+		*/
 
 		glDrawElements(GL_TRIANGLES, planet.numFaces, GL_UNSIGNED_INT, (void*)0);
 		//------------------------------------------------------------------
 
-		/*
+		
 		//----------------------------------------------------------------
-		//draw EARTH
-		glBindVertexArray(earth.vaoId);
+		//draw rocket
+
+		glBindVertexArray(rocket.vaoId);
+		glUniform1f(modelIdLoc, 1.2f);
+		glUniform1f(texTypeIdLoc, 1.1f);
 
 		// transforms
-		trans2 = glm::mat4(1.0f); // identity
-		//trans2 = glm::rotate(trans, glm::radians(rotFactor), glm::vec3(0.0f, 1.0f, 0.0f)); // matrix * rotation_matrix
-		trans2 = glm::rotate(trans, glm::radians(rotFactor), glm::vec3(0.0f, 1.0f, 0.0f));
-		trans2 = glm::translate(trans2, glm::vec3(-3.0f, 0.0f, -7.0f)); // matrix * translate_matrix
-		trans2 = glm::scale(trans2, glm::vec3(0.6f, 0.6f, 0.6f));
-		
-		glm::mat4 normalTrans2 = glm::transpose(glm::inverse(trans2));
-		glUniformMatrix4fv(normalTransformLoc, 1, GL_FALSE, glm::value_ptr(normalTrans2));
-		glUniformMatrix4fv(modelTransformLoc, 1, GL_FALSE, glm::value_ptr(trans2));
+		trans6 = glm::mat4(1.0f); // identity
+		trans6 = glm::translate(trans6, glm::vec3(0.0f, 0.0f, 0.0f));
+		//trans3 = glm::rotate(trans3, glm::radians(rotFactor), glm::vec3(0.0f, 0.0f, 1.0f));
+		trans6 = glm::rotate(trans6, glm::radians(45.0f), glm::vec3(1.0f, 0.0f, 0.0f)); // matrix * rotation_matrix
+		trans6 = glm::rotate(trans6, glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+		trans6 = glm::scale(trans6, glm::vec3(0.5f, 0.5f, 0.5f));
 
-		GLuint earthTexture = earth.textures[earth.materials[0].diffuse_texname];
-		glBindTexture(GL_TEXTURE_2D, earthTexture);
+		glm::mat4 normalTrans6 = glm::transpose(glm::inverse(trans6));
+		glUniformMatrix4fv(normalTransformLoc, 1, GL_FALSE, glm::value_ptr(normalTrans6));
+		glUniformMatrix4fv(modelTransformLoc, 1, GL_FALSE, glm::value_ptr(trans6));
 
-		glDrawElements(GL_TRIANGLES, earth.numFaces, GL_UNSIGNED_INT, (void*)0);
+		glActiveTexture(GL_TEXTURE0);
+		GLuint rocketTexture = rocket.textures[rocket.materials[0].diffuse_texname];
+		glBindTexture(GL_TEXTURE_2D, rocketTexture);
+
+		glActiveTexture(GL_TEXTURE2);
+		GLuint rocketTexture2 = rocket.textures[rocket.materials[1].diffuse_texname];
+		glBindTexture(GL_TEXTURE_2D, rocketTexture2);
+
+		glDrawElements(GL_TRIANGLES, planet.numFaces, GL_UNSIGNED_INT, (void*)0);
 		//------------------------------------------------------------------
-		*/
+		
 
 		//unbindtexture after rendering
 		glBindTexture(GL_TEXTURE_2D, 0);
+		glBindTexture(GL_TEXTURE_2D, 1);
+		glBindTexture(GL_TEXTURE_2D, 2);
+		glBindTexture(GL_TEXTURE_2D, 3);
 		
 
 
@@ -672,3 +723,12 @@ int main()
 	}
 	return 0;
 }
+
+
+/*FOR MULTITEXTURING
+* after texture 0, add what's below:
+* 
+* glActiveTexture(GL_TEXTURE1);
+* GLuint secondaryMap = obj.textures[obj.materials[1].diffuse_texname];
+* glBindTexture(GL_TEXTURE_2D, secondaryMap);
+*/
