@@ -94,14 +94,13 @@ int main()
 		woodHouseOffsets
 	);
 
-	//Moon 2K.obj
-	ObjData planet;
-	LoadObjFile(&planet, "mars/Mercury 1K.obj");
-	GLfloat planetOffsets[] = { 0.0f, 0.0f, 0.0f };
+	ObjData solarPanel;
+	LoadObjFile(&solarPanel, "solarpanel/10781_Solar-Panels_V1.obj");
+	GLfloat solarPanelOffsets[] = { 0.0f, 0.0f, 0.0f };
 	LoadObjToMemory(
-		&planet,
+		&solarPanel,
 		1.0f,
-		planetOffsets
+		solarPanelOffsets
 	);
 
 	ObjData rocket;
@@ -111,6 +110,15 @@ int main()
 		&rocket,
 		1.0f,
 		rocketOffsets
+	);
+
+	ObjData basket;
+	LoadObjFile(&basket, "basket/14029_Plastic_Fruit_Crate_v1_L1.obj");
+	GLfloat basketOffsets[] = { 0.0f, 0.0f, 0.0f };
+	LoadObjToMemory(
+		&basket,
+		1.0f,
+		basketOffsets
 	);
 	
 	std::vector<std::string> faces_evening
@@ -193,6 +201,9 @@ int main()
 
 	glm::mat4 trans6 = glm::mat4(1.0f); // identity
 	glUniformMatrix4fv(modelTransformLoc, 1, GL_FALSE, glm::value_ptr(trans6));
+
+	glm::mat4 trans7 = glm::mat4(1.0f); // identity
+	glUniformMatrix4fv(modelTransformLoc, 1, GL_FALSE, glm::value_ptr(trans7));
 
 	// define projection matrix
 	glm::mat4 projection = glm::mat4(1.0f);
@@ -643,19 +654,19 @@ int main()
 
 
 		//----------------------------------------------------------------
-		//draw planet
+		//draw solarPanel
 
-		glBindVertexArray(planet.vaoId);
+		glBindVertexArray(solarPanel.vaoId);
 		glUniform1f(modelIdLoc, 1.2f);
-		glUniform1f(texTypeIdLoc, 1.0f);
+		glUniform1f(texTypeIdLoc, 1.1f);
 
 		// transforms
 		trans5 = glm::mat4(1.0f); // identity
-		trans5 = glm::translate(trans5, glm::vec3(0.0f, 0.0f, 0.0f));
+		trans5 = glm::translate(trans5, glm::vec3(20.0f, -5.5f, 0.0f));
 		//trans3 = glm::rotate(trans3, glm::radians(rotFactor), glm::vec3(0.0f, 0.0f, 1.0f));
-		trans5 = glm::rotate(trans5, glm::radians(45.0f), glm::vec3(1.0f, 0.0f, 0.0f)); // matrix * rotation_matrix
-		trans5 = glm::rotate(trans5, glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-		trans5 = glm::scale(trans5, glm::vec3(50.0f, 50.0f, 50.0f));
+		//trans5 = glm::rotate(trans5, glm::radians(45.0f), glm::vec3(1.0f, 0.0f, 0.0f)); // matrix * rotation_matrix
+		trans5 = glm::rotate(trans5, glm::radians(270.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+		trans5 = glm::scale(trans5, glm::vec3(0.1f, 0.1f, 0.1f));
 
 		glm::mat4 normalTrans5 = glm::transpose(glm::inverse(trans5));
 		glUniformMatrix4fv(normalTransformLoc, 1, GL_FALSE, glm::value_ptr(normalTrans5));
@@ -663,16 +674,16 @@ int main()
 
 		
 		glActiveTexture(GL_TEXTURE0);
-		GLuint planetTexture = planet.textures[planet.materials[0].diffuse_texname];
-		glBindTexture(GL_TEXTURE_2D, planetTexture);
+		GLuint solarPanelTexture = solarPanel.textures[solarPanel.materials[0].diffuse_texname];
+		glBindTexture(GL_TEXTURE_2D, solarPanelTexture);
 		
-		/*
-		glActiveTexture(GL_TEXTURE1);
-		GLuint planetTextureNormal = planet.textures[planet.materials[0].bump_texname];
-		glBindTexture(GL_TEXTURE_2D, planetTextureNormal);
-		*/
+		
+		glActiveTexture(GL_TEXTURE2);
+		GLuint solarPanelTexture2 = solarPanel.textures[solarPanel.materials[1].diffuse_texname];
+		glBindTexture(GL_TEXTURE_2D, solarPanelTexture2);
+		
 
-		glDrawElements(GL_TRIANGLES, planet.numFaces, GL_UNSIGNED_INT, (void*)0);
+		glDrawElements(GL_TRIANGLES, solarPanel.numFaces, GL_UNSIGNED_INT, (void*)0);
 		//------------------------------------------------------------------
 
 		
@@ -681,21 +692,21 @@ int main()
 
 		glBindVertexArray(rocket.vaoId);
 		glUniform1f(modelIdLoc, 1.2f);
-		glUniform1f(texTypeIdLoc, 1.1f);
+		glUniform1f(texTypeIdLoc, 1.0f);
 
 		// transforms
 		trans6 = glm::mat4(1.0f); // identity
-		trans6 = glm::translate(trans6, glm::vec3(0.0f, 0.0f, 0.0f));
+		trans6 = glm::translate(trans6, glm::vec3(50.0f, 80.0f, -20.0f));
 		//trans3 = glm::rotate(trans3, glm::radians(rotFactor), glm::vec3(0.0f, 0.0f, 1.0f));
 		//trans6 = glm::rotate(trans6, glm::radians(45.0f), glm::vec3(1.0f, 0.0f, 0.0f)); // matrix * rotation_matrix
-		//trans6 = glm::rotate(trans6, glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-		trans6 = glm::scale(trans6, glm::vec3(0.2f, 0.2f, 0.2f));
+		trans6 = glm::rotate(trans6, glm::radians(45.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+		trans6 = glm::scale(trans6, glm::vec3(0.3f, 0.3f, 0.3f));
 
 		glm::mat4 normalTrans6 = glm::transpose(glm::inverse(trans6));
 		glUniformMatrix4fv(normalTransformLoc, 1, GL_FALSE, glm::value_ptr(normalTrans6));
 		glUniformMatrix4fv(modelTransformLoc, 1, GL_FALSE, glm::value_ptr(trans6));
 
-		/*
+		
 		glActiveTexture(GL_TEXTURE0);
 		GLuint rocketTexture = rocket.textures[rocket.materials[0].diffuse_texname];
 		glBindTexture(GL_TEXTURE_2D, rocketTexture);
@@ -703,9 +714,38 @@ int main()
 		glActiveTexture(GL_TEXTURE2);
 		GLuint rocketTexture2 = rocket.textures[rocket.materials[1].diffuse_texname];
 		glBindTexture(GL_TEXTURE_2D, rocketTexture2);
-		*/
+		
 
-		glDrawElements(GL_TRIANGLES, planet.numFaces, GL_UNSIGNED_INT, (void*)0);
+		glDrawElements(GL_TRIANGLES, rocket.numFaces, GL_UNSIGNED_INT, (void*)0);
+		//------------------------------------------------------------------
+
+
+		//----------------------------------------------------------------
+		//draw basket
+
+		glBindVertexArray(basket.vaoId);
+		glUniform1f(modelIdLoc, 1.2f);
+		glUniform1f(texTypeIdLoc, 1.0f);
+
+		// transforms
+		trans7 = glm::mat4(1.0f); // identity
+		trans7 = glm::translate(trans7, glm::vec3(-40.0f, 0.0f, 0.0f));
+		trans7 = glm::rotate(trans7, glm::radians(rotFactor), glm::vec3(0.0f, 0.0f, 1.0f));
+		trans7 = glm::rotate(trans7, glm::radians(rotFactor), glm::vec3(0.0f, 1.0f, 0.0f)); // matrix * rotation_matrix
+		trans7 = glm::rotate(trans7, glm::radians(rotFactor), glm::vec3(1.0f, 0.0f, 0.0f));
+		trans7 = glm::scale(trans7, glm::vec3(0.03f, 0.03f, 0.03f));
+
+		glm::mat4 normalTrans7 = glm::transpose(glm::inverse(trans7));
+		glUniformMatrix4fv(normalTransformLoc, 1, GL_FALSE, glm::value_ptr(normalTrans7));
+		glUniformMatrix4fv(modelTransformLoc, 1, GL_FALSE, glm::value_ptr(trans7));
+
+
+		glActiveTexture(GL_TEXTURE0);
+		GLuint basketTexture = basket.textures[basket.materials[0].diffuse_texname];
+		glBindTexture(GL_TEXTURE_2D, basketTexture);
+
+
+		glDrawElements(GL_TRIANGLES, basket.numFaces, GL_UNSIGNED_INT, (void*)0);
 		//------------------------------------------------------------------
 		
 
