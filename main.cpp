@@ -228,6 +228,8 @@ int main()
 	GLuint lightDirLoc = glGetUniformLocation(shaderProgram, "u_light_dir");
 	//SPOT LIGHT
 	GLuint lightSpotLoc = glGetUniformLocation(shaderProgram, "u_light_spot");
+	//LIGHT CENTER
+	GLuint lightSpotCenterLoc = glGetUniformLocation(shaderProgram, "u_light_spot_center");
 	//glUniform3f(lightPosLoc, 3.0f, 0.0f, 0.0f);
 	
 	//for multitexturing
@@ -531,7 +533,7 @@ int main()
 		//----------------------------------------------------------
 		//draw GRASS
 		glBindVertexArray(grassPatch.vaoId);
-		if (skyTicks >= 40.0f && skyTicks <= 60.0f)
+		if (skyTicks >= 40.0f && skyTicks <= 55.0f)
 		{
 			glUniform1f(modelIdLoc, 1.1f);
 		}
@@ -574,7 +576,7 @@ int main()
 		//draw spaceship
 		
 		glBindVertexArray(spaceship.vaoId);
-		if (skyTicks >= 40.0f && skyTicks <= 60.0f)
+		if (skyTicks >= 40.0f && skyTicks <= 55.0f)
 		{
 			glUniform1f(modelIdLoc, 1.1f);
 		}
@@ -607,7 +609,7 @@ int main()
 		//server rack
 
 		glBindVertexArray(serverrack.vaoId);
-		if (skyTicks >= 40.0f && skyTicks <= 60.0f)
+		if (skyTicks >= 40.0f && skyTicks <= 55.0f)
 		{
 			glUniform1f(modelIdLoc, 1.1f);
 		}
@@ -670,7 +672,7 @@ int main()
 		//draw cpu tower
 
 		glBindVertexArray(csuTower.vaoId);
-		if (skyTicks >= 40.0f && skyTicks <= 60.0f)
+		if (skyTicks >= 40.0f && skyTicks <= 55.0f)
 		{
 			glUniform1f(modelIdLoc, 1.1f);
 		}
@@ -704,7 +706,7 @@ int main()
 		//draw solarPanel
 
 		glBindVertexArray(solarPanel.vaoId);
-		if (skyTicks >= 40.0f && skyTicks <= 60.0f)
+		if (skyTicks >= 40.0f && skyTicks <= 55.0f)
 		{
 			glUniform1f(modelIdLoc, 1.1f);
 		}
@@ -745,7 +747,7 @@ int main()
 		//draw rocket
 
 		glBindVertexArray(rocket.vaoId);
-		if (skyTicks >= 40.0f && skyTicks <= 60.0f)
+		if (skyTicks >= 40.0f && skyTicks <= 55.0f)
 		{
 			glUniform1f(modelIdLoc, 1.1f);
 		}
@@ -785,7 +787,7 @@ int main()
 		//draw basket
 
 		glBindVertexArray(basket.vaoId);
-		if (skyTicks >= 40.0f && skyTicks <= 60.0f)
+		if (skyTicks >= 40.0f && skyTicks <= 55.0f)
 		{
 			glUniform1f(modelIdLoc, 1.1f);
 		}
@@ -821,7 +823,7 @@ int main()
 		//draw lamppost
 
 		glBindVertexArray(lamppost.vaoId);
-		if (skyTicks >= 40.0f && skyTicks <= 60.0f)
+		if (skyTicks >= 40.0f && skyTicks <= 55.0f)
 		{
 			glUniform1f(modelIdLoc, 1.1f);
 		}
@@ -863,7 +865,7 @@ int main()
 
 
 		//--- stop drawing here ---
-#pragma endregion
+#pragma endregion 
 
 		glfwSwapBuffers(window);
 		//listen for glfw input events

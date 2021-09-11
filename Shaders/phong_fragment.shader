@@ -54,12 +54,12 @@ void phongFragmentShader()
 
 	vec3 lightColor = vec3(1.0, 1.0, 1.0);
 
-	float specularStrength = 5.0;
+	float specularStrength = 2.0;
 
 	vec3 viewDir = normalize(u_camera_pos - FragPos);
 	vec3 reflectDir = reflect(-lightVector, Normal);
 
-	float spec = pow(max(dot(reflectDir, viewDir), 0.0), 10);
+	float spec = pow(max(dot(reflectDir, viewDir), 0.0), 5);
 
 	vec3 specular = specularStrength * spec * lightColor;
 
@@ -200,7 +200,7 @@ void normalFragmentShader()
 void spotlightFragmentShader()
 {
 	vec3 lightToSurface = normalize(u_light_pos - FragPos);
-	vec3 lightDir = normalize(-u_light_dir);
+	vec3 lightDir = normalize(u_light_dir);
 
 	float distance = length(u_light_pos - FragPos);
 
@@ -219,7 +219,7 @@ void spotlightFragmentShader()
 	vec3 ambient = u_ambient_color * lightColor;
 
 	float angle = abs(acos(dot(lightDir, lightToSurface)));
-	float gradient = spotLightAttenuate(angle, 0.2f, 0.3f);
+	float gradient = spotLightAttenuate(angle, 0.9f, 0.95f);
 
 	FragColor = vec4(ambient + (diffuse + specular) * gradient, 1.0) * texture(texture_diffuse, UV);
 }
