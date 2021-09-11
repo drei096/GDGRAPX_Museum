@@ -120,6 +120,15 @@ int main()
 		1.0f,
 		basketOffsets
 	);
+
+	ObjData lamppost;
+	LoadObjFile(&lamppost, "lamppost/11832_Lamp_v1_l2.obj");
+	GLfloat lamppostOffsets[] = { 0.0f, 0.0f, 0.0f };
+	LoadObjToMemory(
+		&lamppost,
+		1.0f,
+		lamppostOffsets
+	);
 	
 	std::vector<std::string> faces_evening
 	{
@@ -205,6 +214,9 @@ int main()
 	glm::mat4 trans7 = glm::mat4(1.0f); // identity
 	glUniformMatrix4fv(modelTransformLoc, 1, GL_FALSE, glm::value_ptr(trans7));
 
+	glm::mat4 trans8 = glm::mat4(1.0f); // identity
+	glUniformMatrix4fv(modelTransformLoc, 1, GL_FALSE, glm::value_ptr(trans8));
+
 	// define projection matrix
 	glm::mat4 projection = glm::mat4(1.0f);
 	//glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
@@ -214,6 +226,8 @@ int main()
 	GLuint lightPosLoc = glGetUniformLocation(shaderProgram, "u_light_pos");
 	//DIRECTIONAL LIGHT
 	GLuint lightDirLoc = glGetUniformLocation(shaderProgram, "u_light_dir");
+	//SPOT LIGHT
+	GLuint lightSpotLoc = glGetUniformLocation(shaderProgram, "u_light_spot");
 	//glUniform3f(lightPosLoc, 3.0f, 0.0f, 0.0f);
 	
 	//for multitexturing
@@ -363,6 +377,8 @@ int main()
 			lightY += deltaTime * lightSlow;
 		}
 
+		std::cout << skyTicks << std::endl;
+
 		//Keyboard Input
 		if (checkPress == false) {
 			//Forward
@@ -431,9 +447,10 @@ int main()
 
 		//DIRECTIONAL LIGHT
 		glUniform3f(lightDirLoc, glm::sin(lightX), glm::cos(lightX), 0.0f);
-		//std::cout << glm::sin(lightX) << " " << glm::cos(lightX) << std::endl;
+
 		//POINT LIGHT
-		//glUniform3f(lightPosLoc, glm::sin(lightX), glm::cos(lightX), 0.0f);
+		glUniform3f(lightPosLoc, 0.0f, 3.0f, 0.0f);
+		
 
 		//glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 100.0f);
 		glm::mat4 view = glm::lookAt(
@@ -462,6 +479,8 @@ int main()
 
 		glUniform3f(cameraPosLoc,cPos.x, cPos.y, cPos.z);
 		glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
+
+		glUniform3f(lightSpotLoc, cPos.x, cPos.y, cPos.z);
 		
 		//-------------------------------------------------------------
 #pragma endregion
@@ -512,7 +531,14 @@ int main()
 		//----------------------------------------------------------
 		//draw GRASS
 		glBindVertexArray(grassPatch.vaoId);
-		glUniform1f(modelIdLoc, 1.2f);
+		if (skyTicks >= 40.0f && skyTicks <= 60.0f)
+		{
+			glUniform1f(modelIdLoc, 1.1f);
+		}
+		else
+		{
+			glUniform1f(modelIdLoc, 1.2f);
+		}
 		glUniform1f(texTypeIdLoc, 1.0f);
 
 		// transforms
@@ -548,7 +574,14 @@ int main()
 		//draw spaceship
 		
 		glBindVertexArray(spaceship.vaoId);
-		glUniform1f(modelIdLoc, 1.2f);
+		if (skyTicks >= 40.0f && skyTicks <= 60.0f)
+		{
+			glUniform1f(modelIdLoc, 1.1f);
+		}
+		else
+		{
+			glUniform1f(modelIdLoc, 1.2f);
+		}
 		glUniform1f(texTypeIdLoc, 1.0f);
 
 		// transforms
@@ -574,7 +607,14 @@ int main()
 		//server rack
 
 		glBindVertexArray(serverrack.vaoId);
-		glUniform1f(modelIdLoc, 1.2f);
+		if (skyTicks >= 40.0f && skyTicks <= 60.0f)
+		{
+			glUniform1f(modelIdLoc, 1.1f);
+		}
+		else
+		{
+			glUniform1f(modelIdLoc, 1.2f);
+		}
 		glUniform1f(texTypeIdLoc, 1.0f);
 
 		// transforms
@@ -630,7 +670,14 @@ int main()
 		//draw cpu tower
 
 		glBindVertexArray(csuTower.vaoId);
-		glUniform1f(modelIdLoc, 1.2f);
+		if (skyTicks >= 40.0f && skyTicks <= 60.0f)
+		{
+			glUniform1f(modelIdLoc, 1.1f);
+		}
+		else
+		{
+			glUniform1f(modelIdLoc, 1.2f);
+		}
 		glUniform1f(texTypeIdLoc, 1.0f);
 
 		// transforms
@@ -657,7 +704,14 @@ int main()
 		//draw solarPanel
 
 		glBindVertexArray(solarPanel.vaoId);
-		glUniform1f(modelIdLoc, 1.2f);
+		if (skyTicks >= 40.0f && skyTicks <= 60.0f)
+		{
+			glUniform1f(modelIdLoc, 1.1f);
+		}
+		else
+		{
+			glUniform1f(modelIdLoc, 1.2f);
+		}
 		glUniform1f(texTypeIdLoc, 1.1f);
 
 		// transforms
@@ -691,7 +745,14 @@ int main()
 		//draw rocket
 
 		glBindVertexArray(rocket.vaoId);
-		glUniform1f(modelIdLoc, 1.2f);
+		if (skyTicks >= 40.0f && skyTicks <= 60.0f)
+		{
+			glUniform1f(modelIdLoc, 1.1f);
+		}
+		else
+		{
+			glUniform1f(modelIdLoc, 1.2f);
+		}
 		glUniform1f(texTypeIdLoc, 1.0f);
 
 		// transforms
@@ -724,7 +785,14 @@ int main()
 		//draw basket
 
 		glBindVertexArray(basket.vaoId);
-		glUniform1f(modelIdLoc, 1.2f);
+		if (skyTicks >= 40.0f && skyTicks <= 60.0f)
+		{
+			glUniform1f(modelIdLoc, 1.1f);
+		}
+		else
+		{
+			glUniform1f(modelIdLoc, 1.2f);
+		}
 		glUniform1f(texTypeIdLoc, 1.0f);
 
 		// transforms
@@ -746,6 +814,43 @@ int main()
 
 
 		glDrawElements(GL_TRIANGLES, basket.numFaces, GL_UNSIGNED_INT, (void*)0);
+		//------------------------------------------------------------------
+
+
+		//----------------------------------------------------------------
+		//draw lamppost
+
+		glBindVertexArray(lamppost.vaoId);
+		if (skyTicks >= 40.0f && skyTicks <= 60.0f)
+		{
+			glUniform1f(modelIdLoc, 1.1f);
+		}
+		else
+		{
+			glUniform1f(modelIdLoc, 1.2f);
+		}
+		glUniform1f(texTypeIdLoc, 1.0f);
+
+		// transforms
+		trans8 = glm::mat4(1.0f); // identity
+		trans8 = glm::translate(trans8, glm::vec3(0.0f, 50.0f, 0.0f));
+		trans8 = glm::rotate(trans8, glm::radians(rotFactor), glm::vec3(0.0f, 0.0f, 1.0f));
+		trans8 = glm::rotate(trans8, glm::radians(rotFactor), glm::vec3(0.0f, 1.0f, 0.0f)); // matrix * rotation_matrix
+		trans8 = glm::rotate(trans8, glm::radians(rotFactor), glm::vec3(1.0f, 0.0f, 0.0f));
+		trans8 = glm::scale(trans8, glm::vec3(0.1f, 0.1f, 0.1f));
+
+		glm::mat4 normalTrans8 = glm::transpose(glm::inverse(trans8));
+		glUniformMatrix4fv(normalTransformLoc, 1, GL_FALSE, glm::value_ptr(normalTrans8));
+		glUniformMatrix4fv(modelTransformLoc, 1, GL_FALSE, glm::value_ptr(trans8));
+
+
+		glActiveTexture(GL_TEXTURE0);
+		GLuint lamppostTexture = lamppost.textures[lamppost.materials[4].diffuse_texname];
+		glBindTexture(GL_TEXTURE_2D, lamppostTexture);
+
+
+
+		glDrawElements(GL_TRIANGLES, lamppost.numFaces, GL_UNSIGNED_INT, (void*)0);
 		//------------------------------------------------------------------
 		
 
