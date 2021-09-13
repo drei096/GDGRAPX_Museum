@@ -202,16 +202,17 @@ void spotlightFragmentShader()
 	vec3 lightToSurface = normalize(u_light_pos - FragPos);
 	vec3 lightDir = normalize(u_light_dir);
 
+
 	float distance = length(u_light_pos - FragPos);
 
 	vec3 lightColor = vec3(1.0, 1.0, 1.0);
 
-	float specularStrength = 2.5;
+	float specularStrength = 5.0;
 
 	vec3 viewDir = normalize(u_camera_pos - FragPos);
 	vec3 reflectDir = reflect(-lightDir, Normal);
 
-	float spec = pow(max(dot(reflectDir, viewDir), 0.0), 4);
+	float spec = pow(max(dot(reflectDir, viewDir), 0.0), 64);
 
 	vec3 specular = specularStrength * spec * lightColor;
 

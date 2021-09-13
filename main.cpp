@@ -180,7 +180,6 @@ int main()
 
 	// initialize MVP
 	GLuint modelTransformLoc = glGetUniformLocation(shaderProgram, "u_model");
-
 	GLuint viewLoc = glGetUniformLocation(shaderProgram, "u_view");
 	GLuint projectionLoc = glGetUniformLocation(shaderProgram, "u_projection");
 	
@@ -379,7 +378,9 @@ int main()
 			lightY += deltaTime * lightSlow;
 		}
 
-		std::cout << skyTicks << std::endl;
+		std::cout << lightX << std::endl;
+
+		//std::cout << skyTicks << std::endl;
 
 		//Keyboard Input
 		if (checkPress == false) {
@@ -446,12 +447,6 @@ int main()
 				}
 			}
 		}
-
-		//DIRECTIONAL LIGHT
-		glUniform3f(lightDirLoc, glm::sin(lightX), glm::cos(lightX), 0.0f);
-
-		//POINT LIGHT
-		glUniform3f(lightPosLoc, 0.0f, 3.0f, 0.0f);
 		
 
 		//glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 100.0f);
@@ -533,12 +528,21 @@ int main()
 		//----------------------------------------------------------
 		//draw GRASS
 		glBindVertexArray(grassPatch.vaoId);
-		if (skyTicks >= 40.0f && skyTicks <= 55.0f)
+		if (skyTicks >= 40.0f && skyTicks <= 60.0f)
 		{
-			glUniform1f(modelIdLoc, 1.1f);
+			//POINT LIGHT
+			glUniform3f(lightPosLoc, (cPos + cFront).x, (cPos + cFront).y, (cPos + cFront).z);
+			glUniform3f(lightDirLoc, (cPos+cFront).x, (cPos + cFront).y, (cPos + cFront).z);
+
+			glUniform1f(modelIdLoc, 1.4f);
 		}
 		else
 		{
+			//DIRECTIONAL LIGHT
+			glUniform3f(lightDirLoc, glm::sin(lightX), glm::cos(lightX), 0.0f);
+
+			
+
 			glUniform1f(modelIdLoc, 1.2f);
 		}
 		glUniform1f(texTypeIdLoc, 1.0f);
@@ -576,12 +580,20 @@ int main()
 		//draw spaceship
 		
 		glBindVertexArray(spaceship.vaoId);
-		if (skyTicks >= 40.0f && skyTicks <= 55.0f)
+		if (skyTicks >= 40.0f && skyTicks <= 60.0f)
 		{
+			//POINT LIGHT
+			glUniform3f(lightPosLoc, 0.0f, 3.0f, 0.0f);
+
 			glUniform1f(modelIdLoc, 1.1f);
 		}
 		else
 		{
+			//DIRECTIONAL LIGHT
+			glUniform3f(lightDirLoc, glm::sin(lightX), glm::cos(lightX), 0.0f);
+
+			
+
 			glUniform1f(modelIdLoc, 1.2f);
 		}
 		glUniform1f(texTypeIdLoc, 1.0f);
@@ -609,12 +621,18 @@ int main()
 		//server rack
 
 		glBindVertexArray(serverrack.vaoId);
-		if (skyTicks >= 40.0f && skyTicks <= 55.0f)
+		if (skyTicks >= 40.0f && skyTicks <= 60.0f)
 		{
+			//POINT LIGHT
+			glUniform3f(lightPosLoc, 0.0f, 3.0f, 0.0f);
+
 			glUniform1f(modelIdLoc, 1.1f);
 		}
 		else
 		{
+			//DIRECTIONAL LIGHT
+			glUniform3f(lightDirLoc, glm::sin(lightX), glm::cos(lightX), 0.0f);
+
 			glUniform1f(modelIdLoc, 1.2f);
 		}
 		glUniform1f(texTypeIdLoc, 1.0f);
@@ -672,12 +690,20 @@ int main()
 		//draw cpu tower
 
 		glBindVertexArray(csuTower.vaoId);
-		if (skyTicks >= 40.0f && skyTicks <= 55.0f)
+		if (skyTicks >= 40.0f && skyTicks <= 60.0f)
 		{
+			//POINT LIGHT
+			glUniform3f(lightPosLoc, 0.0f, 3.0f, 0.0f);
+
 			glUniform1f(modelIdLoc, 1.1f);
 		}
 		else
 		{
+			//DIRECTIONAL LIGHT
+			glUniform3f(lightDirLoc, glm::sin(lightX), glm::cos(lightX), 0.0f);
+
+			
+
 			glUniform1f(modelIdLoc, 1.2f);
 		}
 		glUniform1f(texTypeIdLoc, 1.0f);
@@ -706,12 +732,20 @@ int main()
 		//draw solarPanel
 
 		glBindVertexArray(solarPanel.vaoId);
-		if (skyTicks >= 40.0f && skyTicks <= 55.0f)
+		if (skyTicks >= 40.0f && skyTicks <= 60.0f)
 		{
+			//POINT LIGHT
+			glUniform3f(lightPosLoc, 0.0f, 3.0f, 0.0f);
+
 			glUniform1f(modelIdLoc, 1.1f);
 		}
 		else
 		{
+			//DIRECTIONAL LIGHT
+			glUniform3f(lightDirLoc, glm::sin(lightX), glm::cos(lightX), 0.0f);
+
+			
+
 			glUniform1f(modelIdLoc, 1.2f);
 		}
 		glUniform1f(texTypeIdLoc, 1.1f);
@@ -747,12 +781,20 @@ int main()
 		//draw rocket
 
 		glBindVertexArray(rocket.vaoId);
-		if (skyTicks >= 40.0f && skyTicks <= 55.0f)
+		if (skyTicks >= 40.0f && skyTicks <= 60.0f)
 		{
+			//POINT LIGHT
+			glUniform3f(lightPosLoc, 0.0f, 3.0f, 0.0f);
+
 			glUniform1f(modelIdLoc, 1.1f);
 		}
 		else
 		{
+			//DIRECTIONAL LIGHT
+			glUniform3f(lightDirLoc, glm::sin(lightX), glm::cos(lightX), 0.0f);
+
+			
+
 			glUniform1f(modelIdLoc, 1.2f);
 		}
 		glUniform1f(texTypeIdLoc, 1.0f);
@@ -787,12 +829,20 @@ int main()
 		//draw basket
 
 		glBindVertexArray(basket.vaoId);
-		if (skyTicks >= 40.0f && skyTicks <= 55.0f)
+		if (skyTicks >= 40.0f && skyTicks <= 60.0f)
 		{
+			//POINT LIGHT
+			glUniform3f(lightPosLoc, 0.0f, 3.0f, 0.0f);
+
 			glUniform1f(modelIdLoc, 1.1f);
 		}
 		else
 		{
+			//DIRECTIONAL LIGHT
+			glUniform3f(lightDirLoc, glm::sin(lightX), glm::cos(lightX), 0.0f);
+
+			
+
 			glUniform1f(modelIdLoc, 1.2f);
 		}
 		glUniform1f(texTypeIdLoc, 1.0f);
@@ -823,12 +873,19 @@ int main()
 		//draw lamppost
 
 		glBindVertexArray(lamppost.vaoId);
-		if (skyTicks >= 40.0f && skyTicks <= 55.0f)
+		if (skyTicks >= 40.0f && skyTicks <= 60.0f)
 		{
+			//POINT LIGHT
+			glUniform3f(lightPosLoc, 0.0f, 3.0f, 0.0f);
+
 			glUniform1f(modelIdLoc, 1.1f);
 		}
 		else
 		{
+			//DIRECTIONAL LIGHT
+			glUniform3f(lightDirLoc, glm::sin(lightX), glm::cos(lightX), 0.0f);
+
+
 			glUniform1f(modelIdLoc, 1.2f);
 		}
 		glUniform1f(texTypeIdLoc, 1.0f);
