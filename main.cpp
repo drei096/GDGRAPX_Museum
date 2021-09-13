@@ -371,16 +371,6 @@ int main()
 		currentTime = glfwGetTime();
 		deltaTime = currentTime - prevTime;
 
-		if (isTimeStopped == false)
-		{
-			skyTicks += deltaTime;
-			lightX += deltaTime * lightSlow;
-			lightY += deltaTime * lightSlow;
-		}
-
-		std::cout << lightX << std::endl;
-
-		//std::cout << skyTicks << std::endl;
 
 		//Keyboard Input
 		if (checkPress == false) {
@@ -438,6 +428,7 @@ int main()
 				cPos += cRight * deltaTime * walkSpeed;
 			}
 
+			//STOP TIME
 			if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS) {
 				if(isTimeStopped == false)
 					isTimeStopped = true;
@@ -447,6 +438,15 @@ int main()
 				}
 			}
 		}
+
+		if (isTimeStopped == false)
+		{
+			skyTicks += deltaTime;
+			lightX += deltaTime * lightSlow;
+			lightY += deltaTime * lightSlow;
+		}
+
+		std::cout << skyTicks << std::endl;
 		
 
 		//glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 100.0f);
