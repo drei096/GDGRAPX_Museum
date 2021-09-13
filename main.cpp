@@ -12,6 +12,24 @@
 
 float skyTicks = 0.0f;
 
+//stopping time of day
+bool isTimeStopped = false;
+
+
+void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
+{
+	if (key == GLFW_KEY_P && action == GLFW_PRESS)
+	{
+		//STOP TIME
+		if (isTimeStopped == false)
+			isTimeStopped = true;
+		else if (isTimeStopped == true)
+		{
+			isTimeStopped = false;
+		}
+	}
+}
+
 int main() 
 {
 	
@@ -37,6 +55,8 @@ int main()
 		return -1;
 	}
 	glfwMakeContextCurrent(window);
+
+	glfwSetKeyCallback(window, keyCallback);
 
 	//initialize glew
 	glewExperimental = true;
@@ -270,8 +290,7 @@ int main()
 	float lightY = 0.0f;
 	float lightSlow = 0.1f;
 
-	//stopping time of day
-	bool isTimeStopped = false;
+	
 
 	//Keyboard Input Check
 	bool checkPress = false;
@@ -427,16 +446,6 @@ int main()
 			if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
 				cPos += cRight * deltaTime * walkSpeed;
 			}
-
-			//STOP TIME
-			if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS) {
-				if(isTimeStopped == false)
-					isTimeStopped = true;
-				else if (isTimeStopped == true)
-				{
-					isTimeStopped = false;
-				}
-			}
 		}
 
 		if (isTimeStopped == false)
@@ -531,7 +540,7 @@ int main()
 		if (skyTicks >= 40.0f && skyTicks <= 60.0f)
 		{
 			//POINT LIGHT
-			glUniform3f(lightPosLoc, (cPos + cFront).x, (cPos + cFront).y, (cPos + cFront).z);
+			glUniform3f(lightPosLoc, (cPos).x, (cPos).y, (cPos).z);
 			glUniform3f(lightDirLoc, (cPos+cFront).x, (cPos + cFront).y, (cPos + cFront).z);
 
 			glUniform1f(modelIdLoc, 1.4f);
