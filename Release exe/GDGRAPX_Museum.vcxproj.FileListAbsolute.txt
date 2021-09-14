@@ -1,2 +1,0 @@
-C:\Users\drei0\Documents\Programming\C++\gdgrapx\mp\GDGRAPX_Museum\Release\glew32.dll
-C:\Users\drei0\Documents\Programming\C++\gdgrapx\mp\GDGRAPX_Museum\Release\GDGRAPX_Museum.exe
