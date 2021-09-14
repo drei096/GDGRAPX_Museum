@@ -194,7 +194,7 @@ void spotlightFragmentShader()
 	vec3 diffuse = vec3(max(dot(Normal, lightDir), 0.0)) * lightColor;
 	vec3 ambient = u_ambient_color * lightColor;
 
-	float angle = abs(acos(dot(lightDir, lightToSurface)));
+	float angle = abs(atan(dot(lightDir, lightToSurface)));
 	float gradient = spotLightAttenuate(angle, 0.05f, 0.7f);
 
 	FragColor = vec4(ambient + (diffuse + specular) * gradient, 1.0) * texture(texture_diffuse, UV);
