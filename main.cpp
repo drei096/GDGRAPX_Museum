@@ -249,13 +249,14 @@ int main()
 	GLuint lightSpotLoc = glGetUniformLocation(shaderProgram, "u_light_spot");
 	//LIGHT CENTER
 	GLuint lightSpotCenterLoc = glGetUniformLocation(shaderProgram, "u_light_spot_center");
-	//glUniform3f(lightPosLoc, 3.0f, 0.0f, 0.0f);
-	
+
 	//for multitexturing
 	GLuint diffuseTexLoc = glGetUniformLocation(shaderProgram, "texture_diffuse"); 
 	GLuint secondaryDiffuseTexLoc = glGetUniformLocation(shaderProgram, "texture_secondary_diffuse");
 	GLuint tertiaryDiffuseTexLoc = glGetUniformLocation(shaderProgram, "texture_tertiary_diffuse");
 	GLuint normalTexLoc = glGetUniformLocation(shaderProgram, "texture_normal");
+
+	//TEXTURE LOCATIONS
 	glUniform1i(diffuseTexLoc, 0);
 	glUniform1i(normalTexLoc, 1);
 	glUniform1i(secondaryDiffuseTexLoc, 2);
@@ -271,9 +272,6 @@ int main()
 	// set bg color to green
 	glClearColor(0.0f, 0.0f, 0.15f, 0.0f);
 
-	// var for rotations and delta time
-	float xFactor = 0.0f;
-	float xSpeed = 1.0f;
 	
 	float currentTime = glfwGetTime();
 	float prevTime = 0.0f;
@@ -287,11 +285,9 @@ int main()
 
 	//light directions and control
 	float lightX = 45.0f;
-	float lightY = 0.0f;
 	float lightSlow = 0.1f;
 
 	
-
 	//Keyboard Input Check
 	bool checkPress = false;
 
@@ -347,7 +343,7 @@ int main()
 #pragma region View
 		glm::mat4 viewHold = glm::mat4(1.0f); // identity
 
-	//Mouse Hover Rotation
+		//Mouse Hover Rotation
 		glfwGetCursorPos(window, &initX, &initY);
 
 		if (cursorMove)
@@ -409,9 +405,6 @@ int main()
 			if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
 				checkPress = true;
 			}
-			if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS) {
-				checkPress = true;
-			}
 		}
 		else {
 			//Forward
@@ -452,13 +445,11 @@ int main()
 		{
 			skyTicks += deltaTime;
 			lightX += deltaTime * lightSlow;
-			lightY += deltaTime * lightSlow;
 		}
 
 		std::cout << skyTicks << std::endl;
 		
 
-		//glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 100.0f);
 		glm::mat4 view = glm::lookAt(
 			cPos,  //EYE
 			cPos + cFront,  //CENTER
@@ -540,7 +531,6 @@ int main()
 		if (skyTicks >= 40.0f && skyTicks <= 60.0f)
 		{
 			//POINT LIGHT
-			//glUniform3f(lightPosLoc, 0.0f, 0.0f , 0.0f);
 			glUniform3f(lightDirLoc, (cFront).x, (cFront).y, (cFront).z);
 
 			glUniform1f(modelIdLoc, 1.4f);
@@ -550,16 +540,13 @@ int main()
 			//DIRECTIONAL LIGHT
 			glUniform3f(lightDirLoc, glm::sin(lightX), glm::cos(lightX), 0.0f);
 
-
 			glUniform1f(modelIdLoc, 1.2f);
 		}
 		glUniform1f(texTypeIdLoc, 1.0f);
 
 		// transforms
 		trans = glm::mat4(1.0f); // identity
-		//trans = glm::rotate(trans, glm::radians(rotFactor), glm::vec3(0.0f, 1.0f, 0.0f)); // matrix * rotation_matrix
 		trans = glm::translate(trans, glm::vec3(0.0f, -10.0f, 25.0f)); // matrix * translate_matrix
-		//trans = glm::rotate(trans, glm::radians(rotFactor * 0.1f), glm::vec3(0.0f, 1.0f, 0.0f));
 		trans = glm::rotate(trans, glm::radians(270.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 		trans = glm::rotate(trans, glm::radians(270.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 		trans = glm::scale(trans, glm::vec3(0.5f, 0.5f, 0.5f));
@@ -600,17 +587,13 @@ int main()
 			//DIRECTIONAL LIGHT
 			glUniform3f(lightDirLoc, glm::sin(lightX), glm::cos(lightX), 0.0f);
 
-			
-
 			glUniform1f(modelIdLoc, 1.2f);
 		}
 		glUniform1f(texTypeIdLoc, 1.0f);
 
 		// transforms
 		trans1 = glm::mat4(1.0f); // identity
-		//trans = glm::rotate(trans, glm::radians(rotFactor), glm::vec3(0.0f, 1.0f, 0.0f)); // matrix * rotation_matrix
 		trans1 = glm::translate(trans1, glm::vec3(0.0f, -2.0f, 80.0f)); // matrix * translate_matrix
-		//trans1 = glm::rotate(trans1, glm::radians(rotFactor), glm::vec3(0.0f, 1.0f, 0.0f));
 		trans1 = glm::scale(trans1, glm::vec3(0.1f, 0.1f, 0.1f));
 		
 		glm::mat4 normalTrans1 = glm::transpose(glm::inverse(trans1));
@@ -687,9 +670,6 @@ int main()
 		// transforms
 		trans3 = glm::mat4(1.0f); // identity
 		trans3 = glm::translate(trans3, glm::vec3(-20.0f, -7.0f, 0.0f));
-		//trans3 = glm::rotate(trans3, glm::radians(rotFactor), glm::vec3(0.0f, 0.0f, 1.0f));
-		//trans3 = glm::rotate(trans3, glm::radians(rotFactor), glm::vec3(0.0f, 1.0f, 0.0f)); // matrix * rotation_matrix
-		//trans3 = glm::rotate(trans3, glm::radians(rotFactor), glm::vec3(1.0f, 0.0f, 0.0f));
 		trans3 = glm::scale(trans3, glm::vec3(1.0f, 1.0f, 1.0f));
 
 		glm::mat4 normalTrans3 = glm::transpose(glm::inverse(trans3));
@@ -723,8 +703,6 @@ int main()
 			//DIRECTIONAL LIGHT
 			glUniform3f(lightDirLoc, glm::sin(lightX), glm::cos(lightX), 0.0f);
 
-			
-
 			glUniform1f(modelIdLoc, 1.2f);
 		}
 		glUniform1f(texTypeIdLoc, 1.0f);
@@ -732,8 +710,6 @@ int main()
 		// transforms
 		trans4 = glm::mat4(1.0f); // identity
 		trans4 = glm::translate(trans4, glm::vec3(5.0f, 0.0f, 30.0f));
-		//trans3 = glm::rotate(trans3, glm::radians(rotFactor), glm::vec3(0.0f, 0.0f, 1.0f));
-		//trans3 = glm::rotate(trans3, glm::radians(rotFactor), glm::vec3(0.0f, 1.0f, 0.0f)); // matrix * rotation_matrix
 		trans4 = glm::rotate(trans4, glm::radians(rotFactor), glm::vec3(0.0f, 0.0f, 1.0f));
 		trans4 = glm::scale(trans4, glm::vec3(0.05f, 0.05f, 0.05f));
 
@@ -765,8 +741,6 @@ int main()
 			//DIRECTIONAL LIGHT
 			glUniform3f(lightDirLoc, glm::sin(lightX), glm::cos(lightX), 0.0f);
 
-			
-
 			glUniform1f(modelIdLoc, 1.2f);
 		}
 		glUniform1f(texTypeIdLoc, 1.1f);
@@ -774,8 +748,6 @@ int main()
 		// transforms
 		trans5 = glm::mat4(1.0f); // identity
 		trans5 = glm::translate(trans5, glm::vec3(20.0f, -5.5f, 0.0f));
-		//trans3 = glm::rotate(trans3, glm::radians(rotFactor), glm::vec3(0.0f, 0.0f, 1.0f));
-		//trans5 = glm::rotate(trans5, glm::radians(45.0f), glm::vec3(1.0f, 0.0f, 0.0f)); // matrix * rotation_matrix
 		trans5 = glm::rotate(trans5, glm::radians(270.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 		trans5 = glm::scale(trans5, glm::vec3(0.1f, 0.1f, 0.1f));
 
@@ -814,8 +786,6 @@ int main()
 			//DIRECTIONAL LIGHT
 			glUniform3f(lightDirLoc, glm::sin(lightX), glm::cos(lightX), 0.0f);
 
-			
-
 			glUniform1f(modelIdLoc, 1.2f);
 		}
 		glUniform1f(texTypeIdLoc, 1.0f);
@@ -823,8 +793,6 @@ int main()
 		// transforms
 		trans6 = glm::mat4(1.0f); // identity
 		trans6 = glm::translate(trans6, glm::vec3(50.0f, 80.0f, -20.0f));
-		//trans3 = glm::rotate(trans3, glm::radians(rotFactor), glm::vec3(0.0f, 0.0f, 1.0f));
-		//trans6 = glm::rotate(trans6, glm::radians(45.0f), glm::vec3(1.0f, 0.0f, 0.0f)); // matrix * rotation_matrix
 		trans6 = glm::rotate(trans6, glm::radians(45.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 		trans6 = glm::scale(trans6, glm::vec3(0.3f, 0.3f, 0.3f));
 
@@ -861,8 +829,6 @@ int main()
 		{
 			//DIRECTIONAL LIGHT
 			glUniform3f(lightDirLoc, glm::sin(lightX), glm::cos(lightX), 0.0f);
-
-			
 
 			glUniform1f(modelIdLoc, 1.2f);
 		}
@@ -906,7 +872,6 @@ int main()
 			//DIRECTIONAL LIGHT
 			glUniform3f(lightDirLoc, glm::sin(lightX), glm::cos(lightX), 0.0f);
 
-
 			glUniform1f(modelIdLoc, 1.2f);
 		}
 		glUniform1f(texTypeIdLoc, 1.0f);
@@ -927,7 +892,6 @@ int main()
 		glActiveTexture(GL_TEXTURE0);
 		GLuint lamppostTexture = lamppost.textures[lamppost.materials[4].diffuse_texname];
 		glBindTexture(GL_TEXTURE_2D, lamppostTexture);
-
 
 
 		glDrawElements(GL_TRIANGLES, lamppost.numFaces, GL_UNSIGNED_INT, (void*)0);
@@ -952,11 +916,3 @@ int main()
 	return 0;
 }
 
-
-/*FOR MULTITEXTURING
-* after texture 0, add what's below:
-* 
-* glActiveTexture(GL_TEXTURE1);
-* GLuint secondaryMap = obj.textures[obj.materials[1].diffuse_texname];
-* glBindTexture(GL_TEXTURE_2D, secondaryMap);
-*/

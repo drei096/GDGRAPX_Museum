@@ -107,40 +107,15 @@ void basicFragmentShader()
 
 void directionalLightShader()
 {
-
-	
 	//ALTERNATIVE DIR LIGHT
 	float nDotL = dot(Normal, -u_light_dir);
 	vec3 outColor = vec3(clamp(nDotL, 0, 1));
 	//FragColor = vec4(outColor, 1) * texture(texture_diffuse, UV);
 	
 
-	/*
-	//vertexColor = vec3(1.0, 1.0, 1.0);
-	vec3 lightVector = normalize(u_light_dir);
-
-	//float distance = length(u_light_pos - FragPos);
-	//float gradient = attenuate(distance, 30.0);
-
-	vec3 lightColor = vec3(1.0, 1.0, 1.0);
-
-	float specularStrength = 1.0;
-
-	vec3 viewDir = normalize(u_camera_pos - FragPos);
-	vec3 reflectDir = reflect(-lightVector, Normal);
-
-	float spec = pow(max(dot(reflectDir, viewDir), 0.0), 1);
-
-	vec3 specular = specularStrength * spec * lightColor;
-
-	float nDotL = max(dot(Normal, lightVector), 0.0);
-	vec3 diffuse = vec3(nDotL) * lightColor;
-	vec3 ambient = u_ambient_color * lightColor;
-	*/
-
-	if (u_tex_type == 1.0f)
+	if (u_tex_type == 1.0f) //IF TEXTURE IS SINGLE
 		FragColor = vec4(outColor, 1.0) * texture(texture_diffuse, UV);
-	else if (u_tex_type == 1.1f)
+	else if (u_tex_type == 1.1f) //ELSE IF TEXTURE IS MULTIPLE
 		FragColor = vec4(outColor, 1.0) * texture(texture_diffuse, UV) + texture(texture_secondary_diffuse, UV) * (1.0f - nDotL);
 	
 }
