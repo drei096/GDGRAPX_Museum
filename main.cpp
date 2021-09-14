@@ -540,8 +540,8 @@ int main()
 		if (skyTicks >= 40.0f && skyTicks <= 60.0f)
 		{
 			//POINT LIGHT
-			glUniform3f(lightPosLoc, (cPos).x, (cPos).y, (cPos).z);
-			glUniform3f(lightDirLoc, (cPos+cFront).x, (cPos + cFront).y, (cPos + cFront).z);
+			//glUniform3f(lightPosLoc, 0.0f, 0.0f , 0.0f);
+			glUniform3f(lightDirLoc, (cFront).x, (cFront).y, (cFront).z);
 
 			glUniform1f(modelIdLoc, 1.4f);
 		}
@@ -550,7 +550,6 @@ int main()
 			//DIRECTIONAL LIGHT
 			glUniform3f(lightDirLoc, glm::sin(lightX), glm::cos(lightX), 0.0f);
 
-			
 
 			glUniform1f(modelIdLoc, 1.2f);
 		}
@@ -669,7 +668,20 @@ int main()
 		//house
 
 		glBindVertexArray(woodHouse.vaoId);
-		glUniform1f(modelIdLoc, 1.3f);
+		if (skyTicks >= 40.0f && skyTicks <= 60.0f)
+		{
+			//POINT LIGHT
+			glUniform3f(lightPosLoc, 0.0f, 3.0f, 0.0f);
+
+			glUniform1f(modelIdLoc, 1.1f);
+		}
+		else
+		{
+			//DIRECTIONAL LIGHT
+			glUniform3f(lightDirLoc, glm::sin(lightX), glm::cos(lightX), 0.0f);
+
+			glUniform1f(modelIdLoc, 1.3f);
+		}
 		glUniform1f(texTypeIdLoc, 1.0f);
 
 		// transforms
